@@ -20,8 +20,8 @@ export default function Register() {
   const registerMutation = useMutation({
     mutationFn: auth.register,
     onSuccess: (data) => {
-      localStorage.setItem("nuri_token", data.access_token);
-      localStorage.setItem("nuri_user", JSON.stringify(data.user));
+      localStorage.setItem("kamara_token", data.access_token);
+      localStorage.setItem("kamara_user", JSON.stringify(data.user));
       navigate("/dashboard");
     },
     onError: (err: any) => {
@@ -47,7 +47,7 @@ export default function Register() {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">N</span>
             </div>
-            <span className="font-bold text-[#111827] text-2xl">Nuri</span>
+            <span className="font-bold text-[#111827] text-2xl">Kamara</span>
           </Link>
         </div>
 

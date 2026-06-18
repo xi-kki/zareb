@@ -10,18 +10,18 @@ load_dotenv(BASE_DIR / ".env")
 
 
 class Settings:
-    APP_NAME: str = "Nuri API"
+    APP_NAME: str = "Kamara API"
     APP_VERSION: str = "0.1.0"
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
 
     # Database
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        f"sqlite:///{BASE_DIR / 'nuri.db'}",
+        f"sqlite:///{BASE_DIR / 'kamara.db'}",
     )
 
     # JWT
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "nuri-dev-secret-change-in-production-32chars")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "kamara-dev-secret-change-in-production-32chars")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
     JWT_EXPIRY_HOURS: int = int(os.getenv("JWT_EXPIRY_HOURS", "24"))
 

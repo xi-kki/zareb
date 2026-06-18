@@ -1,4 +1,4 @@
-# 🍃 Nuri — AI Compliance Document Checker
+# 🍃 Kamara — AI Compliance Document Checker
 
 **Know your compliance gaps before the auditor does.**
 
@@ -9,7 +9,7 @@
 [![Railway](https://img.shields.io/badge/Backend-Railway-0B0D0E?logo=railway)](https://railway.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Nuri reads your **HACCP plans, ingredient lists, product labels, and audit reports** — then tells you exactly what's missing for **EU/UK export approval**.
+Kamara reads your **HACCP plans, ingredient lists, product labels, and audit reports** — then tells you exactly what's missing for **EU/UK export approval**.
 
 > 🎯 Built for food manufacturers, restaurant chains, and packaged food brands in **Africa** (Lagos, Accra, Nairobi) exporting to European markets.
 
@@ -93,7 +93,7 @@ Open **http://localhost:5173** in your browser.
 | `AI_PROVIDER` | `groq` | AI provider: `groq` (free) or `claude` |
 | `GROQ_API_KEY` | — | Your free key from [console.groq.com](https://console.groq.com) |
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` | Groq model for analysis |
-| `DATABASE_URL` | `sqlite:///./nuri.db` | Postgres for production (Railway) |
+| `DATABASE_URL` | `sqlite:///./kamara.db` | Postgres for production (Railway) |
 | `JWT_SECRET` | — | Random 32+ char string for auth |
 | `CLOUDINARY_*` | — | For document file storage |
 | `CORS_ORIGINS` | `http://localhost:5173` | Frontend URLs allowed |
@@ -103,7 +103,7 @@ Open **http://localhost:5173** in your browser.
 ## 📁 Project Structure
 
 ```
-nuri/
+kamara/
 ├── backend/                # FastAPI application
 │   ├── main.py            # App entry point + lifespan
 │   ├── app/
@@ -128,7 +128,7 @@ nuri/
 
 ---
 
-## 🧪 What Makes Nuri an AI Agent?
+## 🧪 What Makes Kamara an AI Agent?
 
 | Capability | How It Works |
 |------------|-------------|
@@ -162,7 +162,7 @@ nuri/
 
 ## 🧑‍🍳 For African Food Founders
 
-Nuri catches the **top 7 Africa→EU/UK export gaps**:
+Kamara catches the **top 7 Africa→EU/UK export gaps**:
 
 1. ❌ **Allergen labeling** — EU requires 14 major allergens declared
 2. ❌ **Nutritional table** — Per 100g values mandatory in EU

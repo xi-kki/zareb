@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Attach token to requests
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem("nuri_token");
+  const token = localStorage.getItem("kamara_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,8 +21,8 @@ api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("nuri_token");
-      localStorage.removeItem("nuri_user");
+      localStorage.removeItem("kamara_token");
+      localStorage.removeItem("kamara_user");
       window.location.href = "/login";
     }
     return Promise.reject(error);
@@ -69,7 +69,7 @@ export const reports = {
       const url = window.URL.createObjectURL(new Blob([r.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `nuri-report-${id.slice(0, 8)}.pdf`);
+      link.setAttribute("download", `kamara-report-${id.slice(0, 8)}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -80,7 +80,7 @@ export const reports = {
 // Chat
 export const chat = {
   send: (message: string, reportId?: string, documentId?: string) => {
-    const token = localStorage.getItem("nuri_token");
+    const token = localStorage.getItem("kamara_token");
     return fetch(`${API_URL}/chat`, {
       method: "POST",
       headers: {

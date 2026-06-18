@@ -10,7 +10,7 @@ cloudinary.config(
 )
 
 
-async def upload_file(file_bytes: bytes, filename: str, folder: str = "nuri-documents") -> str:
+async def upload_file(file_bytes: bytes, filename: str, folder: str = "kamara-documents") -> str:
     """Upload a file to Cloudinary and return the secure URL."""
     import asyncio
     loop = asyncio.get_event_loop()

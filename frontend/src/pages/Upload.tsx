@@ -171,7 +171,7 @@ export default function UploadPage() {
           ) : (
             <>
               <FileText className="w-5 h-5" />
-              Analyze with Nuri
+              Analyze with Kamara
             </>
           )}
         </button>

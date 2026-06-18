@@ -1,11 +1,11 @@
-/* Nuri PWA Service Worker — offline caching for static assets */
-const CACHE_NAME = "nuri-v1";
+/* Kamara PWA Service Worker — offline caching for static assets */
+const CACHE_NAME = "kamara-v1";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/icons/nuri-192.png",
-  "/icons/nuri-512.png",
+  "/icons/kamara-192.png",
+  "/icons/kamara-512.png",
 ];
 
 self.addEventListener("install", (event) => {

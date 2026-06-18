@@ -37,7 +37,6 @@ export default function ScoreGauge({ score, size = "lg" }: ScoreGaugeProps) {
           cy={radius}
         />
       </svg>
-      </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={`font-bold ${size === "lg" ? "text-4xl" : "text-2xl"}`} style={{ color }}>
           {score}

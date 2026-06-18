@@ -1,4 +1,4 @@
-"""Initial Nuri schema
+"""Initial Kamara schema
 
 Revision ID: 001
 Revises: 

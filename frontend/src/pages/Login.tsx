@@ -15,7 +15,7 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: auth.login,
     onSuccess: (data) => {
-      localStorage.setItem("nuri_token", data.access_token);
+      localStorage.setItem("kamara_token", data.access_token);
       navigate("/dashboard");
     },
     onError: () => setError("Invalid email or password"),
@@ -49,7 +49,7 @@ export default function Login() {
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">N</span>
             </div>
-            <span className="font-bold text-[#111827] text-2xl">Nuri</span>
+            <span className="font-bold text-[#111827] text-2xl">Kamara</span>
           </Link>
         </div>
 

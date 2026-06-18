@@ -1,4 +1,4 @@
-"""Nuri API — AI Compliance Document Checker
+"""Kamara API — AI Compliance Document Checker
 
 Production entry point. Run with:
     uvicorn main:app --host 0.0.0.0 --port 8000
@@ -25,7 +25,7 @@ def _check_production_settings():
             "Set DEBUG=false in production."
         )
     
-    if settings.JWT_SECRET == "nuri-dev-secret-change-in-production-32chars":
+    if settings.JWT_SECRET == "kamara-dev-secret-change-in-production-32chars":
         warnings.warn(
             "SECURITY: JWT_SECRET is the insecure development default. "
             "Generate a random 32+ char secret and set JWT_SECRET in your .env file."
@@ -86,4 +86,4 @@ app.include_router(knowledge.router)
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway/load balancers."""
-    return {"status": "ok", "service": "nuri-api", "version": settings.APP_VERSION}
+    return {"status": "ok", "service": "kamara-api", "version": settings.APP_VERSION}

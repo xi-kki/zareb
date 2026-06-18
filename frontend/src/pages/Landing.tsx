@@ -11,7 +11,7 @@ export default function Landing() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">N</span>
             </div>
-            <span className="font-bold text-[#111827] text-xl">Nuri</span>
+            <span className="font-bold text-[#111827] text-xl">Kamara</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login" className="btn-secondary text-sm py-2 px-4">Login</Link>
@@ -31,7 +31,7 @@ export default function Landing() {
           <span className="text-primary">before the auditor does.</span>
         </h1>
         <p className="text-lg md:text-xl text-[#6B7280] max-w-3xl mx-auto mb-10 leading-relaxed">
-          Nuri reads your HACCP plans, ingredient lists, and food labels — then tells you
+          Kamara reads your HACCP plans, ingredient lists, and food labels — then tells you
           exactly what's missing for EU/UK export approval.
         </p>
         <Link to="/register" className="btn-primary text-lg inline-flex items-center gap-2 px-8 py-4">
@@ -47,7 +47,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: Upload, title: "Upload", desc: "Upload your compliance docs — PDF or Word. Labels, HACCP plans, audit reports." },
-              { icon: FileSearch, title: "Analyze", desc: "Nuri scans against HACCP, FSMA, SQF, BRCGS, or your target standard." },
+              { icon: FileSearch, title: "Analyze", desc: "Kamara scans against HACCP, FSMA, SQF, BRCGS, or your target standard." },
               { icon: CheckCircle, title: "Get Report", desc: "Score, critical gaps, copy-paste fixes — in 30 seconds." },
             ].map((step, i) => (
               <div key={i} className="text-center p-6">
@@ -67,13 +67,13 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-[#111827] mb-4">Audit failed? Find out why before it costs you</h2>
           <p className="text-[#6B7280] text-center mb-12 max-w-2xl mx-auto">
-            African food founders lose millions to failed audits. Here's what Nuri catches.
+            African food founders lose millions to failed audits. Here's what Kamara catches.
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: AlertTriangle, title: "Trying to export to Sainsbury's or Whole Foods?", desc: "They require BRCGS. Nuri checks if you're ready." },
+              { icon: AlertTriangle, title: "Trying to export to Sainsbury's or Whole Foods?", desc: "They require BRCGS. Kamara checks if you're ready." },
               { icon: AlertTriangle, title: "NAFDAC approved ≠ EU approved", desc: "Nigeria's approval doesn't transfer. Know the gaps." },
-              { icon: AlertTriangle, title: "EU Novel Food rules blocked your last export?", desc: "Nuri flags ingredients needing authorization before you ship." },
+              { icon: AlertTriangle, title: "EU Novel Food rules blocked your last export?", desc: "Kamara flags ingredients needing authorization before you ship." },
             ].map((pain, i) => (
               <div key={i} className="card border-l-4 border-l-warning">
                 <pain.icon className="w-6 h-6 text-warning mb-3" />
@@ -89,7 +89,7 @@ export default function Landing() {
       <footer className="bg-white border-t border-gray-100 py-8">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-[#6B7280] font-medium">Free for first 3 documents. No credit card.</p>
-          <p className="text-sm text-[#6B7280] mt-2">© 2026 Nuri. Built for African food founders.</p>
+          <p className="text-sm text-[#6B7280] mt-2">© 2026 Kamara. Built for African food founders.</p>
         </div>
       </footer>
     </div>

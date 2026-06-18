@@ -125,7 +125,7 @@ async def request_magic_link(
         # Generate one-time magic token
         token = generate_magic_token(request.email)
         link = build_magic_link(token)
-        print(f"[Nuri] Magic link for {request.email}: {link}")
+        print(f"[Kamara] Magic link for {request.email}: {link}")
         return MagicLinkResponse(
             message="Magic link sent! Check your email (or server console in dev mode).",
             link=link,

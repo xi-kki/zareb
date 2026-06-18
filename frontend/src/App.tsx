@@ -13,7 +13,7 @@ import Sidebar from "./components/Sidebar";
 import { useState, useEffect } from "react";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("nuri_token");
+  const token = localStorage.getItem("kamara_token");
   if (!token) return <Navigate to="/login" replace />;
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
@@ -26,7 +26,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("nuri_token");
+  const token = localStorage.getItem("kamara_token");
   if (token) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }

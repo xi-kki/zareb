@@ -12,7 +12,7 @@ const SUGGESTED_QUESTIONS = [
 
 export default function ChatPage() {
   const { reportId } = useParams();
-  const [messages, setMessages] = useState<Array<{ role: "user" | "nuri"; content: string }>>([]);
+  const [messages, setMessages] = useState<Array<{ role: "user" | "kamara"; content: string }>>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatStarted, setChatStarted] = useState(false);
@@ -30,8 +30,8 @@ export default function ChatPage() {
     setIsStreaming(true);
     setChatStarted(true);
 
-    // Add a placeholder for Nuri's response
-    setMessages((prev) => [...prev, { role: "nuri", content: "" }]);
+    // Add a placeholder for Kamara's response
+    setMessages((prev) => [...prev, { role: "kamara", content: "" }]);
 
     try {
       const response = await chat.send(message, reportId);
@@ -53,7 +53,7 @@ export default function ChatPage() {
               accumulated += data;
               setMessages((prev) => {
                 const updated = [...prev];
-                updated[updated.length - 1] = { role: "nuri", content: accumulated };
+                updated[updated.length - 1] = { role: "kamara", content: accumulated };
                 return updated;
               });
             }
@@ -63,7 +63,7 @@ export default function ChatPage() {
     } catch (err) {
       setMessages((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1] = { role: "nuri", content: "Sorry, I couldn't process that. Please try again." };
+        updated[updated.length - 1] = { role: "kamara", content: "Sorry, I couldn't process that. Please try again." };
         return updated;
       });
     } finally {
@@ -79,7 +79,7 @@ export default function ChatPage() {
           <Bot className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-lg font-bold text-[#111827]">Nuri Chat</h1>
+          <h1 className="text-lg font-bold text-[#111827]">Kamara Chat</h1>
           <p className="text-xs text-[#6B7280]">Ask questions about your compliance reports</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function ChatPage() {
             <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mb-4">
               <Bot className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-[#111827] mb-2">Ask Nuri anything</h2>
+            <h2 className="text-xl font-bold text-[#111827] mb-2">Ask Kamara anything</h2>
             <p className="text-[#6B7280] mb-6 max-w-md">
               I've analyzed your compliance documents. Ask me about gaps, next steps, or specific regulations.
             </p>
@@ -110,7 +110,7 @@ export default function ChatPage() {
         ) : (
           messages.map((msg, i) => (
             <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
-              {msg.role === "nuri" && (
+              {msg.role === "kamara" && (
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
                   <Bot className="w-5 h-5 text-white" />
                 </div>
@@ -123,7 +123,7 @@ export default function ChatPage() {
                 }`}
               >
                 <p className={`text-sm whitespace-pre-wrap ${msg.role === "user" ? "text-white" : "text-[#111827]"}`}>
-                  {msg.content || (msg.role === "nuri" && i === messages.length - 1 && isStreaming ? (
+                  {msg.content || (msg.role === "kamara" && i === messages.length - 1 && isStreaming ? (
                     <span className="inline-flex gap-1">
                       <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                       <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />

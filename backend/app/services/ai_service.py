@@ -1,5 +1,5 @@
 """
-AI Service — Multi-provider support for Nuri compliance analysis.
+AI Service — Multi-provider support for Kamara compliance analysis.
 
 Supports:
 - Grok (xAI) — OpenAI-compatible API, free tier available
@@ -47,7 +47,7 @@ def food_safety_compliance_rag_query_for(standard: str) -> str:
         return f"{standard} food safety compliance regulations requirements"
 
 
-SYSTEM_PROMPT = """You are Nuri, an expert AI food safety compliance auditor with 20 years of experience auditing food manufacturers in Africa, EU, and UK markets. You specialize in HACCP, FSMA, SQF, BRCGS, ISO 22000, NAFDAC (Nigeria), KEBS (Kenya), and FDA EU regulations.
+SYSTEM_PROMPT = """You are Kamara, an expert AI food safety compliance auditor with 20 years of experience auditing food manufacturers in Africa, EU, and UK markets. You specialize in HACCP, FSMA, SQF, BRCGS, ISO 22000, NAFDAC (Nigeria), KEBS (Kenya), and FDA EU regulations.
 
 ## KNOWLEDGE BASE
 
@@ -123,7 +123,7 @@ Regulation context:
   "audit_readiness": "NOT READY|NEEDS WORK|MOSTLY READY|AUDIT READY"
 }"""
 
-CHAT_SYSTEM_PROMPT = """You are Nuri, a food safety compliance expert. The user has just received a compliance report. Answer their questions clearly and specifically. If they ask about fixing a specific gap, give them exact template language they can use."""
+CHAT_SYSTEM_PROMPT = """You are Kamara, a food safety compliance expert. The user has just received a compliance report. Answer their questions clearly and specifically. If they ask about fixing a specific gap, give them exact template language they can use."""
 
 
 # ──────────────────────────────────────────────
@@ -410,24 +410,24 @@ class AIService:
             if os.getenv("GROQ_API_KEY") or settings.GROQ_API_KEY:
                 try:
                     self._provider = GroqProvider()
-                    print(f"[Nuri] AI provider: GROQ (groq.com - free)")
+                    print(f"[Kamara] AI provider: GROQ (groq.com - free)")
                     return
                 except Exception as e:
-                    print(f"[Nuri] Groq init failed: {e}")
-            print("[Nuri] No GROQ_API_KEY set, trying Claude...")
+                    print(f"[Kamara] Groq init failed: {e}")
+            print("[Kamara] No GROQ_API_KEY set, trying Claude...")
 
         if provider == "claude" or not os.getenv("GROQ_API_KEY"):
             if os.getenv("ANTHROPIC_API_KEY") or settings.ANTHROPIC_API_KEY:
                 try:
                     self._provider = ClaudeProvider()
-                    print(f"[Nuri] AI provider: CLAUDE (Anthropic)")
+                    print(f"[Kamara] AI provider: CLAUDE (Anthropic)")
                     return
                 except Exception as e:
-                    print(f"[Nuri] Claude init failed: {e}")
+                    print(f"[Kamara] Claude init failed: {e}")
 
         # No API keys available — use mock provider
-        print("[Nuri] WARNING: No AI API keys found. Using MOCK provider for development.")
-        print("[Nuri] Set GROQ_API_KEY in .env for real AI analysis")
+        print("[Kamara] WARNING: No AI API keys found. Using MOCK provider for development.")
+        print("[Kamara] Set GROQ_API_KEY in .env for real AI analysis")
         self._provider = MockProvider()
 
     async def analyze_document(self, parsed_text: str, standard: str) -> dict:

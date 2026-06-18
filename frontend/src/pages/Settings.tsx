@@ -16,7 +16,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("nuri_user");
+    const stored = localStorage.getItem("kamara_user");
     if (stored) {
       const u = JSON.parse(stored);
       setUser(u);
@@ -87,7 +87,7 @@ export default function SettingsPage() {
       <div className="card mb-6">
         <h2 className="text-lg font-semibold text-[#111827] mb-4">Export Market Preferences</h2>
         <p className="text-sm text-[#6B7280] mb-4">
-          Nuri tailors compliance checks to your target markets. Your current preference: <strong>{form.export_market}</strong>
+          Kamara tailors compliance checks to your target markets. Your current preference: <strong>{form.export_market}</strong>
         </p>
         <div className="flex gap-3">
           {["EU", "UK", "Both"].map((m) => (

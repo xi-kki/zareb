@@ -68,7 +68,7 @@ export default function Dashboard() {
           <Upload className="w-4 h-4" /> Upload Document
         </Link>
         <Link to="/dashboard/chat" className="btn-secondary inline-flex items-center gap-2 text-sm">
-          <MessageSquare className="w-4 h-4" /> Ask Nuri
+          <MessageSquare className="w-4 h-4" /> Ask Kamara
         </Link>
       </div>
 

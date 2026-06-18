@@ -102,7 +102,7 @@ export default function ReportPage() {
                 onClick={() => navigate(`/dashboard/chat/${report.id}`)}
                 className="btn-secondary inline-flex items-center gap-2 text-sm py-2 px-4"
               >
-                <MessageSquare className="w-4 h-4" /> Ask Nuri about this report
+                <MessageSquare className="w-4 h-4" /> Ask Kamara about this report
               </button>
               <button
                 onClick={async () => {
@@ -260,7 +260,7 @@ export default function ReportPage() {
           onClick={() => navigate(`/dashboard/chat/${report.id}`)}
           className="btn-secondary inline-flex items-center gap-2 text-sm"
         >
-          <MessageSquare className="w-4 h-4" /> Ask Nuri a question
+          <MessageSquare className="w-4 h-4" /> Ask Kamara a question
         </button>
       </div>
     </div>
