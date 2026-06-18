@@ -97,35 +97,35 @@ CHAT_SYSTEM_PROMPT = """You are Nuri, a food safety compliance expert. The user 
 # ──────────────────────────────────────────────
 
 class GroqProvider:
-    """Provider using Groq's free API (groq.com)."""
+    """Provider using Groq's free API (groq.com). Uses httpx directly to avoid broken openai/aiohttp deps."""
 
     def __init__(self):
+        import httpx
         api_key = os.getenv("GROQ_API_KEY") or settings.GROQ_API_KEY or ""
         if not api_key:
             raise RuntimeError(
                 "GROQ_API_KEY is not set. "
                 "Get your free key at https://console.groq.com"
             )
-        try:
-            from openai import OpenAI
-            self.client = OpenAI(
-                api_key=api_key,
-                base_url="https://api.groq.com/openai/v1",
-            )
-        except ImportError:
-            raise RuntimeError("The 'openai' package is required for Groq. Run: pip install openai")
-
-        self.model = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
+        self._api_key = api_key
+        self._client = httpx.AsyncClient(
+            base_url="https://api.groq.com/openai/v1",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=httpx.Timeout(60.0, connect=10.0),
+        )
+        self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
     async def analyze_document(self, parsed_text: str, standard: str) -> dict:
         """Send document text to Groq and get structured compliance analysis."""
         try:
-            import openai
-            response = self.client.chat.completions.create(
-                model=self.model,
-                max_tokens=settings.AI_MAX_TOKENS,
-                temperature=0.1,
-                messages=[
+            response = await self._client.post("/chat/completions", json={
+                "model": self.model,
+                "max_tokens": settings.AI_MAX_TOKENS,
+                "temperature": 0.1,
+                "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {
                         "role": "user",
@@ -136,8 +136,10 @@ class GroqProvider:
                         ),
                     },
                 ],
-            )
-            content = response.choices[0].message.content or "{}"
+            })
+            response.raise_for_status()
+            data = response.json()
+            content = data["choices"][0]["message"]["content"] or "{}"
             return self._parse_json(content, standard)
         except Exception as e:
             raise RuntimeError(f"Groq API error: {str(e)}")
@@ -155,17 +157,26 @@ class GroqProvider:
             {"role": "user", "content": f"{message}{context}"},
         ]
 
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            max_tokens=1000,
-            temperature=0.3,
-            messages=messages,
-            stream=True,
-        )
-
-        for chunk in stream:
-            if chunk.choices[0].delta.content:
-                yield chunk.choices[0].delta.content
+        async with self._client.stream("POST", "/chat/completions", json={
+            "model": self.model,
+            "max_tokens": 1000,
+            "temperature": 0.3,
+            "messages": messages,
+            "stream": True,
+        }) as stream:
+            async for line in stream.aiter_lines():
+                if line.startswith("data: "):
+                    chunk_data = line[6:].strip()
+                    if chunk_data == "[DONE]":
+                        break
+                    if chunk_data:
+                        try:
+                            chunk = json.loads(chunk_data)
+                            delta = chunk["choices"][0].get("delta", {})
+                            if "content" in delta and delta["content"]:
+                                yield delta["content"]
+                        except (json.JSONDecodeError, KeyError):
+                            continue
 
     def _parse_json(self, content: str, standard: str) -> dict:
         """Extract JSON from Groq response."""

@@ -15,6 +15,7 @@ export default function ScoreGauge({ score, size = "lg" }: ScoreGaugeProps) {
 
   return (
     <div className="card flex flex-col items-center justify-center py-4">
+      <div className="relative">
       <svg height={radius * 2} width={radius * 2} className="transform -rotate-90">
         <circle
           stroke="#F3F4F6"
@@ -36,11 +37,13 @@ export default function ScoreGauge({ score, size = "lg" }: ScoreGaugeProps) {
           cy={radius}
         />
       </svg>
-      <div className="absolute flex flex-col items-center">
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={`font-bold ${size === "lg" ? "text-4xl" : "text-2xl"}`} style={{ color }}>
           {score}
         </span>
         <span className="text-xs text-[#6B7280]">/100</span>
+      </div>
       </div>
       <div className="mt-2 text-center">
         <span

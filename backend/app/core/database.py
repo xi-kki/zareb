@@ -41,9 +41,9 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def init_db():
-    """Create all tables."""
+    """Create all tables if they don't exist yet."""
     async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(Base.metadata.create_all, checkfirst=True)
 
 
 async def get_db():

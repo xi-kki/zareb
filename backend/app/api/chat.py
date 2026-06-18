@@ -51,7 +51,7 @@ async def chat(
 
     # Stream response
     async def generate():
-        async for token in claude_service.chat_stream(request.message, report_context):
+        async for token in ai_service.chat_stream(request.message, report_context):
             yield f"data: {token}\n\n"
         yield "data: [DONE]\n\n"
 
