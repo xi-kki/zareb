@@ -1,15 +1,14 @@
-import uuid
 from datetime import datetime, timezone
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
+from app.core.utils import gen_uuid
 
 
 class Document(Base):
     __tablename__ = "documents"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id = Column(Text, primary_key=True, default=gen_uuid)
+    user_id = Column(Text, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     filename = Column(String(255), nullable=False)
     doc_type = Column(String(20), nullable=False)
     cloudinary_url = Column(Text, nullable=False)

@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
-from app.core.security import get_password_hash, verify_password, create_access_token, decode_access_token
+from app.core.security import get_password_hash, verify_password, create_access_token, decode_access_token, validate_password_strength
 from app.models.user import User
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -49,6 +49,15 @@ async def get_current_user(
 
 @router.post("/register", response_model=AuthResponse)
 async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    # Validate password strength
+    pwd_error = validate_password_strength(request.password)
+    if pwd_error:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pwd_error)
+
+    # Validate email format (basic check)
+    if "@" not in request.email or "." not in request.email.split("@")[-1]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format")
+
     # Check if email already exists
     result = await db.execute(select(User).where(User.email == request.email))
     if result.scalar_one_or_none():
@@ -75,7 +84,7 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
     return AuthResponse(access_token=access_token, user=user.to_dict())
 
 
-@router.post("/login", response_model=dict)
+@router.post("/login")
 async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == request.email))
     user = result.scalar_one_or_none()
@@ -83,7 +92,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return {"access_token": access_token}
+    return {"access_token": access_token, "user": user.to_dict()}
 
 
 @router.get("/me", response_model=dict)

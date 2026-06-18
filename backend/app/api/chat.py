@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
 from app.models.report import ComplianceReport
-from app.services.claude_service import claude_service
+from app.services.ai_service import ai_service
 from app.api.auth import get_current_user
 from app.models.user import User
 

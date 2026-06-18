@@ -1,42 +1,62 @@
-from pydantic_settings import BaseSettings
-from typing import List
+"""Application configuration."""
+
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
-class Settings(BaseSettings):
-    # App
+class Settings:
     APP_NAME: str = "Nuri API"
-    APP_VERSION: str = "1.0.0"
-    DEBUG: bool = False
+    APP_VERSION: str = "0.1.0"
+    DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/nuri"
-
-    # Anthropic
-    ANTHROPIC_API_KEY: str = ""
-    CLAUDE_MODEL: str = "claude-sonnet-4-6"
-    CLAUDE_MAX_TOKENS: int = 2000
-
-    # Cloudinary
-    CLOUDINARY_CLOUD_NAME: str = ""
-    CLOUDINARY_API_KEY: str = ""
-    CLOUDINARY_API_SECRET: str = ""
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL",
+        f"sqlite:///{BASE_DIR / 'nuri.db'}",
+    )
 
     # JWT
-    JWT_SECRET: str = "change-this-to-a-random-32-char-string"
-    JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRATION_HOURS: int = 72
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "nuri-dev-secret-change-in-production-32chars")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
+    JWT_EXPIRY_HOURS: int = int(os.getenv("JWT_EXPIRY_HOURS", "24"))
+
+    # AI Provider
+    AI_PROVIDER: str = os.getenv("AI_PROVIDER", "groq")  # "groq" or "claude"
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+    # Claude (fallback)
+    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    CLAUDE_MODEL: str = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
+    AI_MAX_TOKENS: int = int(os.getenv("AI_MAX_TOKENS", "2000"))
+
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: str = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+    CLOUDINARY_API_KEY: str = os.getenv("CLOUDINARY_API_KEY", "")
+    CLOUDINARY_API_SECRET: str = os.getenv("CLOUDINARY_API_SECRET", "")
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://nuri.is-an-ai.dev"
+    _raw_cors: str = os.getenv(
+        "CORS_ORIGINS",
+        "http://localhost:5173,http://localhost:3000",
+    )
 
     @property
-    def cors_origins_list(self) -> List[str]:
-        return [o.strip() for o in self.CORS_ORIGINS.split(",")]
+    def cors_origins_list(self) -> list[str]:
+        """Parse CORS_ORIGINS into a list, filtering empty strings."""
+        origins = [o.strip() for o in self._raw_cors.split(",") if o.strip()]
+        if not origins:
+            origins = ["http://localhost:5173", "http://localhost:3000"]
+        return origins
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    # File upload
+    MAX_UPLOAD_SIZE_MB: int = 10
+    UPLOAD_DIR: Path = BASE_DIR / "uploads"
 
 
 settings = Settings()

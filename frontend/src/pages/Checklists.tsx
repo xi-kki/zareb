@@ -14,6 +14,11 @@ export default function ChecklistsPage() {
     queryFn: () => checklists.get(standard),
   });
 
+  const { data: savedData } = useQuery({
+    queryKey: ["checklist-progress", standard],
+    queryFn: () => checklists.getProgress(standard),
+  });
+
   const saveMutation = useMutation({
     mutationFn: (items: string[]) => checklists.save(standard, items),
   });
@@ -33,12 +38,12 @@ export default function ChecklistsPage() {
   );
 
   useEffect(() => {
-    if (data?.saved_items) {
-      setCompleted(data.saved_items);
+    if (savedData?.completed_items) {
+      setCompleted(savedData.completed_items);
     } else {
       setCompleted([]);
     }
-  }, [data]);
+  }, [savedData]);
 
   const toggleItem = (id: string) => {
     setCompleted((prev) => {

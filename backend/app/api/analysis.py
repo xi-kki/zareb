@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.models.document import Document
 from app.models.report import ComplianceReport
-from app.services.claude_service import claude_service
+from app.services.ai_service import ai_service
 from app.api.auth import get_current_user
 from app.models.user import User
 
@@ -43,9 +43,9 @@ async def analyze_document(
     if not doc.parsed_text:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Document has no extracted text")
 
-    # Run analysis via Claude
+    # Run analysis via AI service
     try:
-        analysis = await claude_service.analyze_document(doc.parsed_text, request.standard)
+        analysis = await ai_service.analyze_document(doc.parsed_text, request.standard)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Analysis failed: {str(e)}")
 

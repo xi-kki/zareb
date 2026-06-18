@@ -80,6 +80,7 @@ export const chat = {
 // Checklists
 export const checklists = {
   get: (standard: string) => api.get(`/checklists/${standard}`).then((r) => r.data),
+  getProgress: (standard: string) => api.get(`/checklists/${standard}/progress`).then((r) => r.data),
   save: (standard: string, completedItems: string[]) =>
     api.post(`/checklists/${standard}/save`, { completed_items: completedItems }).then((r) => r.data),
 };
