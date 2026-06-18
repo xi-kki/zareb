@@ -13,8 +13,8 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("kamara_token");
-    localStorage.removeItem("kamara_user");
+    localStorage.removeItem("zareb_token");
+    localStorage.removeItem("zareb_user");
     navigate("/");
   };
 
@@ -27,7 +27,7 @@ export default function Sidebar() {
             <span className="text-white font-bold text-sm">N</span>
           </div>
           <div>
-            <span className="font-bold text-[#111827] text-lg">Kamara</span>
+            <span className="font-bold text-[#111827] text-lg">Zareb</span>
             <p className="text-[10px] text-[#6B7280] leading-tight">Know your gaps before<br />the auditor does.</p>
           </div>
         </NavLink>

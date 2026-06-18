@@ -81,7 +81,7 @@ async def download_report_pdf(
         d["document"] = report.document.to_dict()
     
     pdf_buffer = await generate_compliance_pdf(d)
-    filename = f"kamara-compliance-report-{report.standard}-{report.created_at.strftime('%Y%m%d') if report.created_at else 'report'}.pdf"
+    filename = f"zareb-compliance-report-{report.standard}-{report.created_at.strftime('%Y%m%d') if report.created_at else 'report'}.pdf"
     
     return StreamingResponse(
         pdf_buffer,

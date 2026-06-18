@@ -1,6 +1,6 @@
 {
-  "name": "Kamara — AI Compliance Checker",
-  "short_name": "Kamara",
+  "name": "Zareb — AI Compliance Checker",
+  "short_name": "Zareb",
   "description": "Know your compliance gaps before the auditor does. AI-powered food safety compliance for African foodtech founders exporting to EU/UK.",
   "start_url": "/",
   "display": "standalone",
@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/kamara-192.png",
+      "src": "/icons/zareb-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/kamara-512.png",
+      "src": "/icons/zareb-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

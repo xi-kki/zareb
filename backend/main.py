@@ -1,4 +1,4 @@
-"""Kamara API — AI Compliance Document Checker
+"""Zareb API — AI Compliance Document Checker
 
 Production entry point. Run with:
     uvicorn main:app --host 0.0.0.0 --port 8000
@@ -9,6 +9,7 @@ import warnings
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
@@ -25,7 +26,7 @@ def _check_production_settings():
             "Set DEBUG=false in production."
         )
     
-    if settings.JWT_SECRET == "kamara-dev-secret-change-in-production-32chars":
+    if settings.JWT_SECRET == "zareb-dev-secret-change-in-production-32chars":
         warnings.warn(
             "SECURITY: JWT_SECRET is the insecure development default. "
             "Generate a random 32+ char secret and set JWT_SECRET in your .env file."
@@ -50,6 +51,27 @@ app = FastAPI(
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
+
+# Security headers middleware
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # Only set CSP in non-dev or if explicitly configured
+    if not settings.DEBUG:
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self' https:; "
+            "font-src 'self' data:; "
+        )
+    return response
 
 # ── CORS (hardened for production) ─────────────────────────
 
@@ -86,4 +108,4 @@ app.include_router(knowledge.router)
 @app.get("/health")
 async def health():
     """Health check endpoint for Railway/load balancers."""
-    return {"status": "ok", "service": "kamara-api", "version": settings.APP_VERSION}
+    return {"status": "ok", "service": "zareb-api", "version": settings.APP_VERSION}

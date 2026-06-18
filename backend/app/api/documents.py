@@ -98,7 +98,7 @@ async def upload_document(
             cloud_url = await cloudinary_upload(file_bytes, file.filename or "document.pdf")
         except Exception as e:
             # Log but don't fail — fall back to local storage
-            print(f"[Kamara] Cloudinary upload failed, using local storage: {e}")
+            print(f"[Zareb] Cloudinary upload failed, using local storage: {e}")
     
     if not cloud_url:
         cloud_url = await _store_file_locally(file_bytes, file.filename or "document.pdf")

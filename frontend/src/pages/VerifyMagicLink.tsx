@@ -20,8 +20,8 @@ export default function VerifyMagicLink() {
     auth
       .verifyMagic(token)
       .then((data) => {
-        localStorage.setItem("kamara_token", data.access_token);
-        localStorage.setItem("kamara_user", JSON.stringify(data.user));
+        localStorage.setItem("zareb_token", data.access_token);
+        localStorage.setItem("zareb_user", JSON.stringify(data.user));
         setStatus("success");
         setTimeout(() => navigate("/dashboard"), 1500);
       })

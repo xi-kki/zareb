@@ -8,12 +8,12 @@ from fpdf import FPDF
 
 
 class ReportPDF(FPDF):
-    """Custom PDF with Kamara branding."""
+    """Custom PDF with Zareb branding."""
 
     def header(self):
         self.set_font("Helvetica", "B", 10)
         self.set_text_color(22, 163, 74)
-        self.cell(0, 8, "Kamara Compliance Report", align="L")
+        self.cell(0, 8, "Zareb Compliance Report", align="L")
         self.set_font("Helvetica", "", 7)
         self.set_text_color(107, 114, 128)
         self.cell(0, 8, f"Generated {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", align="R", new_x="LMARGIN", new_y="NEXT")
@@ -25,7 +25,7 @@ class ReportPDF(FPDF):
         self.set_font("Helvetica", "I", 7)
         self.set_text_color(156, 163, 175)
         self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align="C")
-        self.cell(0, 10, "Kamara — Know your gaps before the auditor does.", align="R")
+        self.cell(0, 10, "Zareb — Know your gaps before the auditor does.", align="R")
 
     def score_section(self, score: int, readiness: str):
         """Display compliance score and audit readiness."""

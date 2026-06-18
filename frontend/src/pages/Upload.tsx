@@ -3,12 +3,13 @@ import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { documents, analysis } from "../api/client";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, Camera, ScanLine } from "lucide-react";
+import CameraScanner from "../components/CameraScanner";
 
 const DOC_TYPES = [
+  { value: "product_label", label: "Product Label / Ingredient List" },
   { value: "haccp_plan", label: "HACCP Plan" },
-  { value: "ingredient_list", label: "Ingredient List / Bill of Materials" },
-  { value: "product_label", label: "Product Label" },
+  { value: "ingredient_list", label: "Bill of Materials (BOM)" },
   { value: "sop", label: "Standard Operating Procedure (SOP)" },
   { value: "audit_report", label: "Previous Audit Report" },
   { value: "supplier_cert", label: "Supplier Certificate" },
@@ -16,21 +17,21 @@ const DOC_TYPES = [
 ];
 
 const STANDARDS = [
+  { value: "BRCGS", label: "BRCGS (UK Retail — Sainsbury's, Tesco, Waitrose)" },
   { value: "HACCP", label: "HACCP (General)" },
   { value: "FSMA", label: "FSMA (US FDA)" },
   { value: "SQF", label: "SQF (Safe Quality Food)" },
-  { value: "BRCGS", label: "BRCGS (UK Retail)" },
   { value: "ISO22000", label: "ISO 22000" },
   { value: "NAFDAC", label: "NAFDAC (Nigeria)" },
   { value: "KEBS", label: "KEBS (Kenya)" },
-  { value: "FDA_EU", label: "EU Food Law" },
+  { value: "FDA_EU", label: "EU Food Law — Novel Food & Allergens" },
 ];
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
-  const [docType, setDocType] = useState("haccp_plan");
-  const [standard, setStandard] = useState("HACCP");
+  const [docType, setDocType] = useState("product_label");
+  const [standard, setStandard] = useState("BRCGS");
   const [progress, setProgress] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -42,7 +43,7 @@ export default function UploadPage() {
       return doc;
     },
     onSuccess: async (doc) => {
-      setProgress("Analyzing with Claude... (30-60 seconds)");
+      setProgress("Analyzing with AI... (30-60 seconds)");
       setIsAnalyzing(true);
       try {
         const report = await analysis.analyze(doc.id, standard);
@@ -53,7 +54,7 @@ export default function UploadPage() {
       }
     },
     onError: (err: any) => {
-      setProgress(err?.response?.data?.detail || "Upload failed");
+      setProgress(err?.response?.data?.detail || "Upload failed. Try again.");
       setIsAnalyzing(false);
     },
   });
@@ -83,53 +84,86 @@ export default function UploadPage() {
     uploadMutation.mutate();
   };
 
+  const handleCameraCapture = (capturedFile: File) => {
+    setFile(capturedFile);
+    setDocType("product_label");
+  };
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-[#111827] mb-6">Upload Document</h1>
+    <div className="max-w-3xl mx-auto">
+      {/* Header — copywriting: clear benefit statement */}
+      <div className="mb-8">
+        <h1 className="text-display-xl font-display font-semibold text-[#1d1d1f] mb-2">
+          Check your compliance in 30 seconds
+        </h1>
+        <p className="text-body-sm text-[#6B7280]">
+          Upload a label, HACCP plan, or audit report. Zareb scans it against your target standard
+          and tells you exactly where you stand — before the auditor does.
+        </p>
+      </div>
 
-      <div className="max-w-2xl">
-        {/* Dropzone */}
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors mb-6 ${
-            isDragActive
-              ? "border-primary bg-primary-50"
-              : file
-              ? "border-primary bg-primary-50/50"
-              : "border-gray-300 hover:border-primary hover:bg-gray-50"
-          }`}
-        >
-          <input {...getInputProps()} />
-          {file ? (
-            <div className="flex flex-col items-center">
-              <FileText className="w-12 h-12 text-primary mb-3" />
-              <p className="font-semibold text-[#111827]">{file.name}</p>
-              <p className="text-sm text-[#6B7280]">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFile(null);
-                }}
-                className="text-sm text-danger hover:underline mt-2"
-              >
-                Remove
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <Upload className="w-12 h-12 text-[#6B7280] mb-3" />
-              <p className="font-semibold text-[#111827]">
-                {isDragActive ? "Drop your file here" : "Drag & drop your file here"}
-              </p>
-              <p className="text-sm text-[#6B7280]">or click to browse</p>
-              <p className="text-xs text-[#6B7280] mt-2">PDF, DOCX, DOC, JPG, PNG · Max 10MB</p>
-            </div>
-          )}
+      {/* Camera Scanner — "Scan your product label now" */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Camera className="w-5 h-5 text-[#0071E3]" />
+          <span className="text-sm font-semibold text-[#1d1d1f]">Snap a photo of any label</span>
         </div>
+        <CameraScanner onCapture={handleCameraCapture} disabled={isAnalyzing} />
+      </div>
 
-        {/* Document Type */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-[#111827] mb-1">Document Type</label>
+      {/* Divider */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex-1 border-t border-[#d6d6d6]" />
+        <span className="text-caption text-[#858585] font-medium">OR upload a file</span>
+        <div className="flex-1 border-t border-[#d6d6d6]" />
+      </div>
+
+      {/* Dropzone */}
+      <div
+        {...getRootProps()}
+        className={`rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-all duration-150 mb-6 ${
+          isDragActive
+            ? "border-[#0071E3] bg-[#E8F4FD]/50"
+            : file
+            ? "border-[#16A34A] bg-[#F0FDF4]/30"
+            : "border-[#d6d6d6] hover:border-[#0071E3]/50 hover:bg-[#f5f5f7]/50"
+        }`}
+      >
+        <input {...getInputProps()} />
+        {file ? (
+          <div className="flex flex-col items-center">
+            <FileText className="w-10 h-10 text-[#16A34A] mb-3" />
+            <p className="font-semibold text-[#1d1d1f]">{file.name}</p>
+            <p className="text-body-sm text-[#6B7280]">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setFile(null);
+              }}
+              className="text-body-sm text-[#DC2626] hover:underline mt-2"
+            >
+              Remove and try another file
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            <Upload className="w-10 h-10 text-[#858585] mb-3" />
+            <p className="font-semibold text-[#1d1d1f]">
+              {isDragActive ? "Drop your file here" : "Drag & drop a file, or click to browse"}
+            </p>
+            <p className="text-body-sm text-[#6B7280] mt-1">
+              PDF, DOCX, JPG, PNG — up to 10MB
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Document Type + Standard side by side */}
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label className="block text-body-sm font-semibold text-[#1d1d1f] mb-1.5">
+            What are you checking?
+          </label>
           <select
             className="input-field"
             value={docType}
@@ -141,10 +175,10 @@ export default function UploadPage() {
             ))}
           </select>
         </div>
-
-        {/* Standard */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-[#111827] mb-1">Standard to Check Against</label>
+        <div>
+          <label className="block text-body-sm font-semibold text-[#1d1d1f] mb-1.5">
+            Standard to check against
+          </label>
           <select
             className="input-field"
             value={standard}
@@ -156,33 +190,38 @@ export default function UploadPage() {
             ))}
           </select>
         </div>
-
-        {/* Analyze Button */}
-        <button
-          onClick={handleAnalyze}
-          disabled={!file || uploadMutation.isPending}
-          className="btn-primary w-full flex items-center justify-center gap-2"
-        >
-          {uploadMutation.isPending ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {progress || "Analyzing..."}
-            </>
-          ) : (
-            <>
-              <FileText className="w-5 h-5" />
-              Analyze with Kamara
-            </>
-          )}
-        </button>
-
-        {isAnalyzing && !uploadMutation.isPending && (
-          <div className="mt-4 bg-info-50 text-info-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            {progress}
-          </div>
-        )}
       </div>
+
+      {/* CTA — Copywriting: Clear, urgent, benefit-focused */}
+      <button
+        onClick={handleAnalyze}
+        disabled={!file || uploadMutation.isPending}
+        className="btn-primary w-full flex items-center justify-center gap-2 text-body-sm"
+      >
+        {uploadMutation.isPending ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            {progress || "Analyzing..."}
+          </>
+        ) : (
+          <>
+            <ScanLine className="w-5 h-5" />
+            {file ? "Run compliance check — it's free" : "Select a file to get started"}
+          </>
+        )}
+      </button>
+
+      {isAnalyzing && !uploadMutation.isPending && (
+        <div className="mt-4 bg-[#EFF6FF] text-[#1D4ED8] px-4 py-3 rounded-lg text-body-sm flex items-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          {progress}
+        </div>
+      )}
+
+      {/* Trust signal */}
+      <p className="text-caption text-[#858585] text-center mt-6">
+        Free for your first 3 checks. No credit card required.
+      </p>
     </div>
   );
 }

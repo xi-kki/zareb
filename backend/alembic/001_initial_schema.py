@@ -1,4 +1,4 @@
-"""Initial Kamara schema
+"""Initial Zareb schema
 
 Revision ID: 001
 Revises: 

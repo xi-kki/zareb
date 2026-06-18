@@ -1,15 +1,34 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token, decode_access_token, validate_password_strength
 from app.models.user import User
 from app.services.magic_link import generate_magic_token, verify_magic_token, build_magic_link
+import re
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 security = HTTPBearer()
+
+# In-memory rate limiting (simple sliding window)
+_RATE_LIMIT_CACHE: dict[str, list[float]] = {}
+_RATE_LIMIT_WINDOW = 60  # 60 seconds
+_RATE_LIMIT_MAX = 10  # max 10 requests per window
+
+def _check_rate_limit(key: str) -> bool:
+    """Check if request exceeds rate limit. Returns True if allowed."""
+    import time
+    now = time.time()
+    if key not in _RATE_LIMIT_CACHE:
+        _RATE_LIMIT_CACHE[key] = []
+    # Clean old entries
+    _RATE_LIMIT_CACHE[key] = [t for t in _RATE_LIMIT_CACHE[key] if now - t < _RATE_LIMIT_WINDOW]
+    if len(_RATE_LIMIT_CACHE[key]) >= _RATE_LIMIT_MAX:
+        return False
+    _RATE_LIMIT_CACHE[key].append(now)
+    return True
 
 
 class RegisterRequest(BaseModel):
@@ -18,6 +37,22 @@ class RegisterRequest(BaseModel):
     company_name: str = ""
     country: str = "Other"
     export_market: str = "EU"
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        """Strict email validation using regex."""
+        pattern = r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+        if not re.match(pattern, v.strip()):
+            raise ValueError("Invalid email format")
+        return v.strip().lower()
+
+    @field_validator("export_market")
+    @classmethod
+    def validate_market(cls, v: str) -> str:
+        if v not in ("EU", "UK", "Both"):
+            raise ValueError("export_market must be EU, UK, or Both")
+        return v
 
 
 class LoginRequest(BaseModel):
@@ -50,23 +85,19 @@ async def get_current_user(
 
 @router.post("/register", response_model=AuthResponse)
 async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db)):
+    # Rate limit by IP
+    if not _check_rate_limit(f"register:{request.email}"):
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many requests. Please wait.")
+
     # Validate password strength
     pwd_error = validate_password_strength(request.password)
     if pwd_error:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=pwd_error)
 
-    # Validate email format (basic check)
-    if "@" not in request.email or "." not in request.email.split("@")[-1]:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format")
-
     # Check if email already exists
     result = await db.execute(select(User).where(User.email == request.email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
-
-    # Validate export_market
-    if request.export_market not in ("EU", "UK", "Both"):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="export_market must be EU, UK, or Both")
 
     # Create user
     user = User(
@@ -87,6 +118,10 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
 
 @router.post("/login")
 async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
+    # Rate limit by IP
+    if not _check_rate_limit(f"login:{request.email}"):
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many attempts. Please wait.")
+
     result = await db.execute(select(User).where(User.email == request.email))
     user = result.scalar_one_or_none()
     if not user or not verify_password(request.password, user.hashed_password):
@@ -117,6 +152,10 @@ async def request_magic_link(
     db: AsyncSession = Depends(get_db),
 ):
     """Request a magic link for passwordless login."""
+    # Rate limit by IP
+    if not _check_rate_limit(f"magic:{request.email}"):
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many requests. Please wait.")
+
     # Check if email exists — if not, silently respond (don't reveal if registered)
     result = await db.execute(select(User).where(User.email == request.email))
     user = result.scalar_one_or_none()
@@ -125,7 +164,7 @@ async def request_magic_link(
         # Generate one-time magic token
         token = generate_magic_token(request.email)
         link = build_magic_link(token)
-        print(f"[Kamara] Magic link for {request.email}: {link}")
+        print(f"[Zareb] Magic link for {request.email}: {link}")
         return MagicLinkResponse(
             message="Magic link sent! Check your email (or server console in dev mode).",
             link=link,

@@ -1,11 +1,11 @@
-/* Kamara PWA Service Worker — offline caching for static assets */
-const CACHE_NAME = "kamara-v1";
+/* Zareb PWA Service Worker — offline caching for static assets */
+const CACHE_NAME = "zareb-v1";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/icons/kamara-192.png",
-  "/icons/kamara-512.png",
+  "/icons/zareb-192.png",
+  "/icons/zareb-512.png",
 ];
 
 self.addEventListener("install", (event) => {
