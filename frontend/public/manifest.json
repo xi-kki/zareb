@@ -1,0 +1,27 @@
+{
+  "name": "Nuri — AI Compliance Checker",
+  "short_name": "Nuri",
+  "description": "Know your compliance gaps before the auditor does. AI-powered food safety compliance for African foodtech founders exporting to EU/UK.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#16A34A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/nuri-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/nuri-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "food"],
+  "lang": "en",
+  "scope": "/"
+}

@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { reports } from "../api/client";
 import { useState } from "react";
-import { ArrowLeft, Download, RefreshCw, MessageSquare, AlertTriangle, Info, CheckCircle, Copy, Check } from "lucide-react";
+import { ArrowLeft, Download, RefreshCw, MessageSquare, AlertTriangle, Info, CheckCircle, Copy, Check, Loader2 } from "lucide-react";
 import ScoreGauge from "../components/ScoreGauge";
 import GapCard from "../components/GapCard";
 
@@ -11,6 +11,7 @@ export default function ReportPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"critical" | "moderate" | "minor">("critical");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const { data: report, isLoading } = useQuery({
     queryKey: ["report", id],
@@ -103,8 +104,25 @@ export default function ReportPage() {
               >
                 <MessageSquare className="w-4 h-4" /> Ask Nuri about this report
               </button>
-              <button className="btn-secondary inline-flex items-center gap-2 text-sm py-2 px-4">
-                <Download className="w-4 h-4" /> Download PDF
+              <button
+                onClick={async () => {
+                  setDownloading(true);
+                  try {
+                    const { reports } = await import("../api/client");
+                    await reports.downloadPdf(report.id);
+                  } catch (e) {
+                    console.error("PDF download failed", e);
+                  }
+                  setDownloading(false);
+                }}
+                disabled={downloading}
+                className="btn-secondary inline-flex items-center gap-2 text-sm py-2 px-4 disabled:opacity-50"
+              >
+                {downloading ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...</>
+                ) : (
+                  <><Download className="w-4 h-4" /> Download PDF</>
+                )}
               </button>
               <button
                 onClick={() => navigate("/dashboard/upload")}
@@ -212,8 +230,25 @@ export default function ReportPage() {
 
       {/* Bottom Actions */}
       <div className="flex flex-wrap gap-3">
-        <button className="btn-primary inline-flex items-center gap-2 text-sm">
-          <Download className="w-4 h-4" /> Download Report as PDF
+        <button
+          onClick={async () => {
+            setDownloading(true);
+            try {
+              const { reports } = await import("../api/client");
+              await reports.downloadPdf(report.id);
+            } catch (e) {
+              console.error("PDF download failed", e);
+            }
+            setDownloading(false);
+          }}
+          disabled={downloading}
+          className="btn-primary inline-flex items-center gap-2 text-sm disabled:opacity-50"
+        >
+          {downloading ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...</>
+          ) : (
+            <><Download className="w-4 h-4" /> Download Report as PDF</>
+          )}
         </button>
         <button
           onClick={() => navigate("/dashboard/upload")}

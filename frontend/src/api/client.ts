@@ -36,6 +36,10 @@ export const auth = {
   login: (data: { email: string; password: string }) =>
     api.post("/auth/login", data).then((r) => r.data),
   me: () => api.get("/auth/me").then((r) => r.data),
+  magicLink: (data: { email: string }) =>
+    api.post("/auth/magic-link", data).then((r) => r.data),
+  verifyMagic: (token: string) =>
+    api.get(`/auth/verify-magic?token=${token}`).then((r) => r.data),
 };
 
 // Documents
@@ -60,6 +64,17 @@ export const analysis = {
 export const reports = {
   list: () => api.get("/reports").then((r) => r.data),
   get: (id: string) => api.get(`/reports/${id}`).then((r) => r.data),
+  downloadPdf: (id: string) =>
+    api.get(`/reports/${id}/pdf`, { responseType: "blob" }).then((r) => {
+      const url = window.URL.createObjectURL(new Blob([r.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `nuri-report-${id.slice(0, 8)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    }),
 };
 
 // Chat
@@ -83,6 +98,13 @@ export const checklists = {
   getProgress: (standard: string) => api.get(`/checklists/${standard}/progress`).then((r) => r.data),
   save: (standard: string, completedItems: string[]) =>
     api.post(`/checklists/${standard}/save`, { completed_items: completedItems }).then((r) => r.data),
+};
+
+// Knowledge Base (RAG)
+export const knowledge = {
+  search: (query: string, topK: number = 5) =>
+    api.get("/knowledge/search", { params: { q: query, top_k: topK } }).then((r) => r.data),
+  stats: () => api.get("/knowledge/stats").then((r) => r.data),
 };
 
 export default api;

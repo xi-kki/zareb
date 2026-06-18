@@ -11,10 +11,41 @@ import os
 from typing import AsyncGenerator, Optional
 
 from app.core.config import settings
+from app.services.rag_service import rag
 
 # ──────────────────────────────────────────────
 # System Prompts (shared across providers)
 # ──────────────────────────────────────────────
+
+def _build_rag_prompt(standard: str) -> str:
+    """Build system prompt enriched with RAG context from the knowledge base."""
+    rag.initialize()
+    rag_context = rag.enrich_prompt(food_safety_compliance_rag_query_for(standard))
+    return SYSTEM_PROMPT.replace("{rag_context}", rag_context)
+
+
+def food_safety_compliance_rag_query_for(standard: str) -> str:
+    """Generate a search query for the RAG knowledge base based on the standard."""
+    standard_lower = standard.lower()
+    if standard_lower == "haccp":
+        return "HACCP principles hazard analysis critical control points food safety plan"
+    elif standard_lower == "fsma":
+        return "FSMA preventive controls food safety modernization act traceability supplier verification"
+    elif standard_lower in ("brcgs", "brc"):
+        return "BRCGS Issue 9 food safety standard management commitment site standards audit"
+    elif standard_lower == "sqf":
+        return "SQF safe quality food safety plan food safety culture site conformity"
+    elif standard_lower == "iso22000":
+        return "ISO 22000 food safety management system HACCP prerequisite programmes traceability"
+    elif standard_lower == "nafdac":
+        return "NAFDAC Nigeria food labeling registration requirements ingredients list"
+    elif standard_lower == "kebs":
+        return "KEBS Kenya Bureau of Standards food labeling standardization mark"
+    elif standard_lower in ("fda_eu", "eu"):
+        return "EU Regulation 1169/2011 food labeling allergens nutritional declaration country of origin"
+    else:
+        return f"{standard} food safety compliance regulations requirements"
+
 
 SYSTEM_PROMPT = """You are Nuri, an expert AI food safety compliance auditor with 20 years of experience auditing food manufacturers in Africa, EU, and UK markets. You specialize in HACCP, FSMA, SQF, BRCGS, ISO 22000, NAFDAC (Nigeria), KEBS (Kenya), and FDA EU regulations.
 
@@ -64,7 +95,10 @@ When analyzing a compliance document, you must:
 7. GIVE specific, actionable recommendations with example language the founder can copy-paste
 8. HIGHLIGHT Africa-to-EU/UK export specific requirements they commonly miss
 
-Always respond in this exact JSON format:
+Always respond in this exact JSON format. Use the provided regulation context below to give accurate, specific, regulation-backed guidance.
+
+Regulation context:
+{rag_context}
 {
   "overall_score": <0-100>,
   "document_summary": "<2 sentences>",
@@ -119,14 +153,19 @@ class GroqProvider:
         self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
     async def analyze_document(self, parsed_text: str, standard: str) -> dict:
-        """Send document text to Groq and get structured compliance analysis."""
+        """Send document text to Groq and get structured compliance analysis, enriched with RAG context."""
         try:
+            # Build RAG-enriched system prompt
+            rag.initialize()
+            rag_context = rag.enrich_prompt(food_safety_compliance_rag_query_for(standard))
+            enriched_prompt = SYSTEM_PROMPT.replace("{rag_context}", rag_context)
+            
             response = await self._client.post("/chat/completions", json={
                 "model": self.model,
                 "max_tokens": settings.AI_MAX_TOKENS,
                 "temperature": 0.1,
                 "messages": [
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": enriched_prompt},
                     {
                         "role": "user",
                         "content": (
@@ -221,12 +260,15 @@ class ClaudeProvider:
         self.model = os.getenv("CLAUDE_MODEL", settings.CLAUDE_MODEL)
 
     async def analyze_document(self, parsed_text: str, standard: str) -> dict:
-        """Send document text to Claude and get structured compliance analysis."""
+        """Send document text to Claude and get structured compliance analysis with RAG context."""
         try:
+            rag.initialize()
+            rag_context = rag.enrich_prompt(food_safety_compliance_rag_query_for(standard))
+            enriched_prompt = SYSTEM_PROMPT.replace("{rag_context}", rag_context)
             response = self.client.messages.create(
                 model=self.model,
                 max_tokens=settings.AI_MAX_TOKENS,
-                system=SYSTEM_PROMPT,
+                system=enriched_prompt,
                 messages=[
                     {
                         "role": "user",

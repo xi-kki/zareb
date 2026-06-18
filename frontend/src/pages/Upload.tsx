@@ -70,6 +70,9 @@ export default function UploadPage() {
       "application/pdf": [".pdf"],
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
       "application/msword": [".doc"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/webp": [".webp"],
     },
     maxSize: 10 * 1024 * 1024,
     maxFiles: 1,
@@ -119,7 +122,7 @@ export default function UploadPage() {
                 {isDragActive ? "Drop your file here" : "Drag & drop your file here"}
               </p>
               <p className="text-sm text-[#6B7280]">or click to browse</p>
-              <p className="text-xs text-[#6B7280] mt-2">PDF, DOCX, DOC · Max 10MB</p>
+              <p className="text-xs text-[#6B7280] mt-2">PDF, DOCX, DOC, JPG, PNG · Max 10MB</p>
             </div>
           )}
         </div>

@@ -8,6 +8,7 @@ import Report from "./pages/Report";
 import Chat from "./pages/Chat";
 import Checklists from "./pages/Checklists";
 import Settings from "./pages/Settings";
+import VerifyMagicLink from "./pages/VerifyMagicLink";
 import Sidebar from "./components/Sidebar";
 import { useState, useEffect } from "react";
 
@@ -36,6 +37,7 @@ export default function App() {
       <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+      <Route path="/auth/verify-magic" element={<VerifyMagicLink />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/dashboard/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
       <Route path="/dashboard/reports/:id" element={<ProtectedRoute><Report /></ProtectedRoute>} />

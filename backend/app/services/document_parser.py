@@ -1,6 +1,7 @@
 import PyPDF2
 import docx
 import io
+from app.services.vision_service import extract_text_from_image, is_image_file
 
 
 async def extract_text_from_pdf(file_bytes: bytes) -> str:
@@ -30,6 +31,15 @@ async def extract_text_from_docx(file_bytes: bytes) -> str:
     return "\n".join(text)
 
 
+async def extract_text_from_image_file(file_bytes: bytes, filename: str) -> str:
+    """Extract text from an image file using Groq Vision OCR."""
+    try:
+        text = await extract_text_from_image(file_bytes, filename)
+        return text
+    except Exception as e:
+        raise ValueError(f"Failed to extract text from image: {str(e)}")
+
+
 async def extract_text(file_bytes: bytes, filename: str) -> str:
     """Extract text from a document based on file extension."""
     ext = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
@@ -37,5 +47,7 @@ async def extract_text(file_bytes: bytes, filename: str) -> str:
         return await extract_text_from_pdf(file_bytes)
     elif ext in ("docx", "doc"):
         return await extract_text_from_docx(file_bytes)
+    elif ext in ("jpg", "jpeg", "png", "webp"):
+        return await extract_text_from_image_file(file_bytes, filename)
     else:
-        raise ValueError(f"Unsupported file type: .{ext}. Only PDF and DOCX are supported.")
+        raise ValueError(f"Unsupported file type: .{ext}. Only PDF, DOCX, and images (JPG, PNG) are supported.")

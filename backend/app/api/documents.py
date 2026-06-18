@@ -22,6 +22,9 @@ router = APIRouter(prefix="/api/documents", tags=["documents"])
 ALLOWED_FILE_SIGNATURES = {
     b"%PDF": "application/pdf",
     b"\x50\x4B\x03\x04": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # DOCX
+    b"\xFF\xD8\xFF": "image/jpeg",  # JPEG
+    b"\x89PNG\r\n\x1a\n": "image/png",  # PNG
+    b"RIFF": "image/webp",  # WEBP (starts with RIFF....WEBP)
 }
 
 VALID_DOC_TYPES = {"haccp_plan", "ingredient_list", "product_label", "sop", "audit_report", "supplier_cert", "other"}
@@ -73,10 +76,14 @@ async def upload_document(
     # Validate file signature (magic bytes), not just content-type header
     detected_type = _validate_file_signature(file_bytes)
     if not detected_type:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file type. Only PDF and DOCX files are supported.",
-        )
+        # Check for WebP (RIFF + WEBP)
+        if file_bytes[:4] == b"RIFF" and file_bytes[8:12] == b"WEBP":
+            detected_type = "image/webp"
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid file type. Only PDF, DOCX, and images (JPG, PNG, WebP) are supported.",
+            )
 
     # Extract text content
     try:

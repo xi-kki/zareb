@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import auth, documents, analysis, reports, chat, checklists
+from app.api import auth, documents, analysis, reports, chat, checklists, knowledge
 
 # ── Production safety checks ──────────────────────────────
 
@@ -80,6 +80,7 @@ app.include_router(analysis.router)
 app.include_router(reports.router)
 app.include_router(chat.router)
 app.include_router(checklists.router)
+app.include_router(knowledge.router)
 
 
 @app.get("/health")
