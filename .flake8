@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 100
+exclude = .git,__pycache__,venv,venv_new,venv_nuri,node_modules,dist
+ignore = E203,W503

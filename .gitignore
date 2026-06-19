@@ -18,6 +18,7 @@ build/
 .idea/
 *.swp
 *.swo
+*.tsbuildinfo
 
 # OS
 .DS_Store
@@ -29,3 +30,7 @@ backend/.env
 
 # Logs
 *.log
+
+# Coverage
+coverage/
+.nyc_output/
