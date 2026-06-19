@@ -12,7 +12,13 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.document import Document
 from app.services.document_parser import extract_text
-from app.services.cloudinary_service import upload_file as cloudinary_upload
+# Cloudinary is optional — skip if not configured
+from app.core.config import settings
+if settings.CLOUDINARY_CLOUD_NAME:
+    from app.services.cloudinary_service import upload_file as cloudinary_upload
+else:
+    async def cloudinary_upload(file_bytes: bytes, filename: str) -> str:
+        return ""
 from app.api.auth import get_current_user
 from app.models.user import User
 
