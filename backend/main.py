@@ -39,7 +39,12 @@ _check_production_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    try:
+        await init_db()
+    except Exception as e:
+        # App can still serve healthcheck even if DB is down.
+        # DB will be retried on first request.
+        print(f"[Zareb] DB init deferred (will retry): {e}")
     yield
 
 
