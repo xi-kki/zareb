@@ -19,7 +19,6 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
     setError(null);
     setLoading(true);
     try {
-      // Request camera with preferred environment (back) camera for labels
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } },
       });
@@ -47,17 +46,14 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
-    // Match canvas size to video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Draw video frame to canvas
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert to blob
     canvas.toBlob(
       (blob) => {
         if (!blob) return;
@@ -84,17 +80,12 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
     setError(null);
   }, []);
 
-  // Cleanup on unmount
-  const cleanup = useCallback(() => {
-    stopCamera();
-  }, [stopCamera]);
-
   if (error) {
     return (
-      <div className="rounded-xl border border-[#d6d6d6] bg-[#FEF2F2] p-6 text-center">
-        <Camera className="w-10 h-10 text-[#DC2626] mx-auto mb-3" />
-        <p className="text-sm font-medium text-[#B91C1C] mb-2">Camera unavailable</p>
-        <p className="text-xs text-[#6B7280] mb-4">{error}</p>
+      <div className="rounded-2xl border border-stone-200 bg-danger-50/50 p-6 text-center">
+        <Camera className="w-10 h-10 text-danger mx-auto mb-3" />
+        <p className="text-sm font-medium text-danger mb-2">Camera unavailable</p>
+        <p className="text-xs text-stone-500 mb-4">{error}</p>
         <div className="flex gap-2 justify-center">
           <button onClick={resetScanner} className="btn-secondary text-sm !py-2 !px-4">
             <RefreshCw className="w-4 h-4 mr-1 inline" /> Try again
@@ -106,11 +97,9 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
 
   if (streaming) {
     return (
-      <div className="rounded-xl overflow-hidden border border-[#d6d6d6] bg-black relative">
-        {/* Hidden canvas for capture */}
+      <div className="rounded-2xl overflow-hidden border border-stone-200 bg-black relative shadow-card">
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* Video preview */}
         <video
           ref={videoRef}
           autoPlay
@@ -119,15 +108,14 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
           className="w-full h-auto max-h-[400px] object-cover"
         />
 
-        {/* Controls overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex justify-center gap-4">
           <button
             onClick={capturePhoto}
             disabled={disabled}
-            className="w-16 h-16 rounded-full bg-white border-4 border-white/50 flex items-center justify-center hover:bg-gray-100 transition-colors"
+            className="w-16 h-16 rounded-full bg-white border-4 border-white/50 flex items-center justify-center hover:bg-stone-100 transition-colors shadow-lg"
             title="Capture photo"
           >
-            <div className="w-10 h-10 rounded-full border-2 border-[#1d1d1f]" />
+            <div className="w-10 h-10 rounded-full border-2 border-stone-800" />
           </button>
           <button
             onClick={stopCamera}
@@ -138,12 +126,11 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
           </button>
         </div>
 
-        {/* Scan frame guide */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
           <ScanLine className="w-24 h-24 text-white/30" />
         </div>
 
-        <p className="absolute top-3 left-3 bg-black/40 text-white text-xs px-2 py-1 rounded-full">
+        <p className="absolute top-3 left-3 bg-black/40 text-white text-xs px-2 py-1 rounded-pill backdrop-blur-sm">
           Point at product label
         </p>
       </div>
@@ -151,7 +138,7 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
   }
 
   return (
-    <div className="border-2 border-dashed border-[#0071E3]/30 rounded-xl bg-[#E8F4FD]/30 p-6 text-center transition-all hover:border-[#0071E3]/60 hover:bg-[#E8F4FD]/50">
+    <div className="border-2 border-dashed border-brand/20 rounded-2xl bg-brand-50/30 p-6 text-center transition-all hover:border-brand/40 hover:bg-brand-50/50 group">
       <button
         onClick={startCamera}
         disabled={disabled || loading}
@@ -159,18 +146,18 @@ export default function CameraScanner({ onCapture, disabled }: CameraScannerProp
       >
         {loading ? (
           <>
-            <Loader2 className="w-10 h-10 text-[#0071E3] animate-spin" />
-            <span className="text-sm font-medium text-[#0071E3]">Accessing camera...</span>
+            <Loader2 className="w-10 h-10 text-brand animate-spin" />
+            <span className="text-sm font-medium text-brand">Accessing camera...</span>
           </>
         ) : (
           <>
-            <div className="w-16 h-16 bg-[#0071E3]/10 rounded-full flex items-center justify-center mb-1">
-              <Camera className="w-8 h-8 text-[#0071E3]" />
+            <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-1 group-hover:scale-110 transition-transform duration-200">
+              <Camera className="w-8 h-8 text-brand" />
             </div>
-            <span className="text-lg font-semibold text-[#1d1d1f]">
+            <span className="font-display font-semibold text-stone-900 text-lg">
               Scan your product label now
             </span>
-            <span className="text-sm text-[#6B7280]">
+            <span className="text-sm text-stone-500 max-w-xs">
               Point your camera at any food label — Zareb reads the ingredients
             </span>
           </>

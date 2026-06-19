@@ -14,18 +14,18 @@ interface ReportTableProps {
   reports: Report[];
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return "text-[#16A34A] bg-[#F0FDF4]";
-  if (score >= 50) return "text-[#D97706] bg-[#FFFBEB]";
-  return "text-[#DC2626] bg-[#FEF2F2]";
+function getScoreBadge(score: number): string {
+  if (score >= 80) return "badge bg-success-50 text-success border border-success/20";
+  if (score >= 50) return "badge bg-warning-50 text-warning border border-warning/20";
+  return "badge bg-danger-50 text-danger border border-danger/20";
 }
 
-function getReadinessColor(status: string): string {
+function getReadinessBadge(status: string): string {
   switch (status) {
-    case "AUDIT READY": return "text-[#16A34A] bg-[#F0FDF4]";
-    case "MOSTLY READY": return "text-[#D97706] bg-[#FFFBEB]";
-    case "NEEDS WORK": return "text-[#D97706] bg-[#FFFBEB]";
-    default: return "text-[#DC2626] bg-[#FEF2F2]";
+    case "AUDIT READY": return "badge bg-success-50 text-success border border-success/20";
+    case "MOSTLY READY": return "badge bg-warning-50 text-warning border border-warning/20";
+    case "NEEDS WORK": return "badge bg-warning-50 text-warning border border-warning/20";
+    default: return "badge bg-danger-50 text-danger border border-danger/20";
   }
 }
 
@@ -34,41 +34,41 @@ export default function ReportTable({ reports }: ReportTableProps) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-100">
-            <th className="text-left py-3 px-2 text-[#6B7280] font-medium">Document</th>
-            <th className="text-left py-3 px-2 text-[#6B7280] font-medium">Standard</th>
-            <th className="text-center py-3 px-2 text-[#6B7280] font-medium">Score</th>
-            <th className="text-center py-3 px-2 text-[#6B7280] font-medium">Status</th>
-            <th className="text-left py-3 px-2 text-[#6B7280] font-medium">Date</th>
-            <th className="text-right py-3 px-2 text-[#6B7280] font-medium">Action</th>
+          <tr className="border-b border-stone-100">
+            <th className="text-left py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Document</th>
+            <th className="text-left py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Standard</th>
+            <th className="text-center py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Score</th>
+            <th className="text-center py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Status</th>
+            <th className="text-left py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Date</th>
+            <th className="text-right py-3 px-3 text-stone-400 font-medium text-xs uppercase tracking-wider">Action</th>
           </tr>
         </thead>
         <tbody>
           {reports.slice(0, 10).map((report) => (
-            <tr key={report.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-              <td className="py-3 px-2 font-medium text-[#111827] max-w-[200px] truncate">
+            <tr key={report.id} className="border-b border-stone-50 hover:bg-stone-50/50 transition-colors">
+              <td className="py-3.5 px-3 font-medium text-stone-900 max-w-[200px] truncate">
                 {report.document?.filename || report.document_id?.slice(0, 8) + "..." || "Unknown"}
               </td>
-              <td className="py-3 px-2 text-[#6B7280]">{report.standard}</td>
-              <td className="py-3 px-2 text-center">
-                <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getScoreColor(report.overall_score)}`}>
+              <td className="py-3.5 px-3 text-stone-500">{report.standard}</td>
+              <td className="py-3.5 px-3 text-center">
+                <span className={`${getScoreBadge(report.overall_score)}`}>
                   {report.overall_score}
                 </span>
               </td>
-              <td className="py-3 px-2 text-center">
-                <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getReadinessColor(report.audit_readiness)}`}>
+              <td className="py-3.5 px-3 text-center">
+                <span className={`${getReadinessBadge(report.audit_readiness)}`}>
                   {report.audit_readiness?.replace("_", " ") || "N/A"}
                 </span>
               </td>
-              <td className="py-3 px-2 text-[#6B7280] text-xs">
+              <td className="py-3.5 px-3 text-stone-400 text-xs">
                 {report.created_at ? new Date(report.created_at).toLocaleDateString() : "-"}
               </td>
-              <td className="py-3 px-2 text-right">
+              <td className="py-3.5 px-3 text-right">
                 <Link
                   to={`/dashboard/reports/${report.id}`}
-                  className="text-primary font-medium text-xs hover:underline"
+                  className="text-brand font-medium text-xs hover:text-brand-700 transition-colors"
                 >
-                  View Report
+                  View Report →
                 </Link>
               </td>
             </tr>

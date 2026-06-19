@@ -16,9 +16,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("zareb_token");
   if (!token) return <Navigate to="/login" replace />;
   return (
-    <div className="flex min-h-screen bg-[#F9FAFB]">
+    <div className="flex min-h-screen bg-cream-200">
       <Sidebar />
-      <main className="flex-1 ml-64 p-6 max-w-7xl mx-auto w-full">
+      <main className="flex-1 ml-64 p-6 md:p-8 lg:p-10 max-w-7xl mx-auto w-full">
         {children}
       </main>
     </div>

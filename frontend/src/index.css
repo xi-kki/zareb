@@ -9,87 +9,124 @@
   }
 
   body {
-    font-family: "SF Pro Text", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f5f5f7;
-    color: #1d1d1f;
+    background-color: #f8f6f3;
+    color: #1c1917;
   }
 
-  /* High contrast focus styles — Apple Interactive Blue */
   *:focus-visible {
-    outline: 2px solid #0071E3;
+    outline: 2px solid #0f766e;
     outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Fraunces", Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: #0f766e;
+    color: white;
+  }
+
+  /* Warm scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f5f1ea;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d4c9b8;
     border-radius: 4px;
   }
-
-  /* Headings use SF Pro Display */
-  h1, h2, h3, h4 {
-    font-family: "SF Pro Display", "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    letter-spacing: -0.015em;
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a09888;
   }
 }
 
 @layer components {
-  /* Apple-style primary button — pill shape, Interactive Blue */
   .btn-primary {
-    @apply bg-[#0071E3] text-white font-semibold py-3 px-8 rounded-pill
-           hover:bg-[#0066CC] active:bg-[#0055AA]
-           transition-all duration-150 ease-out
-           focus-visible:outline-2 focus-visible:outline-[#2997ff]
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-brand text-white font-medium py-3 px-8 rounded-pill
+           hover:bg-brand-700 active:bg-brand-800
+           transition-all duration-200 ease-out
+           focus-visible:outline-2 focus-visible:outline-brand
+           disabled:opacity-50 disabled:cursor-not-allowed
+           shadow-sm hover:shadow-md;
   }
 
-  /* Apple-style secondary button — outline pill */
   .btn-secondary {
-    @apply bg-transparent text-[#0066CC] font-semibold py-3 px-8 rounded-pill
-           border border-[#0066CC]
-           hover:bg-[#0066CC] hover:text-white
-           active:bg-[#0055AA]
-           transition-all duration-150 ease-out
+    @apply bg-transparent text-brand font-medium py-3 px-8 rounded-pill
+           border-2 border-brand/30
+           hover:bg-brand-50 hover:border-brand
+           active:bg-brand-100
+           transition-all duration-200 ease-out
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  /* Apple-style text link button */
-  .btn-link {
-    @apply bg-transparent text-[#1d1d1f] font-semibold py-2 px-0
-           hover:text-[#0071E3]
-           transition-colors duration-150
-           inline-flex items-center gap-1;
+  .btn-ghost {
+    @apply bg-transparent text-stone-600 font-medium py-2 px-4 rounded-lg
+           hover:bg-stone-100 hover:text-stone-900
+           transition-all duration-150 ease-out
+           inline-flex items-center gap-2;
   }
 
-  /* Apple-style card — Pure White on Canvas White, subtle border */
   .card {
-    @apply bg-[#ffffff] rounded-xl border border-[#d6d6d6] p-6 shadow-card;
+    @apply bg-white rounded-2xl border border-stone-200 p-6 shadow-card;
   }
 
-  /* Apple-style input — clean, no border-radius, focused blue underline */
+  .card-hover {
+    @apply card hover:shadow-card-hover hover:border-brand/20 transition-all duration-200;
+  }
+
+  .card-warm {
+    @apply bg-white rounded-2xl border border-cream-400 p-6 shadow-soft;
+  }
+
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border border-[#d6d6d6]
-           text-[#1d1d1f] placeholder:text-[#858585]
-           bg-[#ffffff]
-           focus:border-[#0071E3] focus:ring-2 focus:ring-[#0071E3]/20
-           transition-all duration-150 outline-none;
+    @apply w-full px-4 py-3 rounded-xl border border-stone-200
+           text-stone-900 placeholder:text-stone-400
+           bg-white
+           focus:border-brand focus:ring-2 focus:ring-brand/15
+           transition-all duration-150 outline-none
+           text-sm;
   }
 
-  /* Apple-style badge/tag */
   .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
   }
 
-  /* Section spacing */
-  .section-apple {
-    @apply py-16 md:py-20;
+  .badge-critical {
+    @apply badge bg-danger-50 text-danger border border-danger/20;
   }
 
-  /* Surface levels */
-  .surface-canvas {
-    background-color: #f5f5f7;
+  .badge-moderate {
+    @apply badge bg-warning-50 text-warning border border-warning/20;
   }
-  .surface-white {
-    background-color: #ffffff;
+
+  .badge-minor {
+    @apply badge bg-brand-50 text-brand border border-brand/20;
   }
-  .surface-gray {
-    background-color: #e2e2e5;
+
+  .section-warm {
+    @apply py-16 md:py-24;
+  }
+
+  /* Warm gradient background for hero sections */
+  .gradient-warm {
+    background: linear-gradient(175deg, #faf7f2 0%, #f5f1ea 50%, #f0ece4 100%);
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #134e4a 100%);
+  }
+
+  /* Decorative pattern for cards */
+  .pattern-dots {
+    background-image: radial-gradient(rgba(15, 118, 110, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 }

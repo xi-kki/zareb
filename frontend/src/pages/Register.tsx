@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { auth } from "../api/client";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Leaf } from "lucide-react";
 
 const COUNTRIES = ["Nigeria", "Ghana", "Kenya", "Other"];
 
@@ -39,31 +39,31 @@ export default function Register() {
     setForm((prev) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-cream-200 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">N</span>
+          <Link to="/" className="inline-flex items-center gap-3 group">
+            <div className="w-11 h-11 bg-gradient-to-br from-brand to-brand-800 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+              <Leaf className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-[#111827] text-2xl">Zareb</span>
+            <span className="font-display font-bold text-stone-900 text-2xl">Zareb</span>
           </Link>
         </div>
 
         <div className="card">
-          <h1 className="text-2xl font-bold text-[#111827] mb-2">Get started free</h1>
-          <p className="text-[#6B7280] mb-6">First 3 compliance checks on us</p>
+          <h1 className="font-display text-2xl font-bold text-stone-900 mb-2">Get started free</h1>
+          <p className="text-stone-500 mb-6 text-sm">First 3 compliance checks on us</p>
 
           {error && (
-            <div className="bg-danger-50 text-danger-700 px-4 py-3 rounded-lg text-sm mb-4">
+            <div className="bg-danger-50 text-danger-700 border border-danger/10 px-4 py-3 rounded-xl text-sm mb-4">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#111827] mb-1">Email</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Email</label>
               <input
                 type="email"
                 required
@@ -74,7 +74,7 @@ export default function Register() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#111827] mb-1">Password</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Password</label>
               <input
                 type="password"
                 required
@@ -86,7 +86,7 @@ export default function Register() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#111827] mb-1">Company Name</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Company Name</label>
               <input
                 type="text"
                 className="input-field"
@@ -96,7 +96,7 @@ export default function Register() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#111827] mb-1">Country</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Country</label>
               <select
                 className="input-field"
                 value={form.country}
@@ -108,7 +108,7 @@ export default function Register() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#111827] mb-1">Export Market Target</label>
+              <label className="block text-sm font-medium text-stone-700 mb-1.5">Export Market Target</label>
               <select
                 className="input-field"
                 value={form.export_market}
@@ -122,16 +122,16 @@ export default function Register() {
             <button
               type="submit"
               disabled={registerMutation.isPending}
-              className="btn-primary w-full flex items-center justify-center gap-2"
+              className="btn-primary w-full flex items-center justify-center gap-2 mt-2"
             >
               {registerMutation.isPending ? "Creating account..." : "Create Account"}
               <UserPlus className="w-4 h-4" />
             </button>
           </form>
 
-          <p className="text-center text-sm text-[#6B7280] mt-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-primary font-medium hover:underline">
+          <p className="text-center text-sm text-stone-400 mt-6">
+            Already have an account?{' '}
+            <Link to="/login" className="text-brand font-medium hover:text-brand-700 transition-colors">
               Sign in
             </Link>
           </p>

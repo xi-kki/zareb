@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { FileText, BarChart3, CheckSquare, MessageSquare, Settings, LogOut, Upload } from "lucide-react";
+import { FileText, BarChart3, CheckSquare, MessageSquare, Settings, LogOut, Upload, Leaf } from "lucide-react";
 
 const navItems = [
   { to: "/dashboard", icon: BarChart3, label: "Dashboard" },
@@ -19,16 +19,16 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-100 flex flex-col z-50">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-stone-200 flex flex-col z-50">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-100">
-        <NavLink to="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">N</span>
+      <div className="p-6 border-b border-stone-100">
+        <NavLink to="/dashboard" className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-brand to-brand-800 rounded-xl flex items-center justify-center shadow-sm">
+            <Leaf className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="font-bold text-[#111827] text-lg">Zareb</span>
-            <p className="text-[10px] text-[#6B7280] leading-tight">Know your gaps before<br />the auditor does.</p>
+            <span className="font-display font-bold text-stone-900 text-xl">Zareb</span>
+            <p className="text-[11px] text-stone-400 leading-tight font-medium">Compliance Checker</p>
           </div>
         </NavLink>
       </div>
@@ -41,10 +41,10 @@ export default function Sidebar() {
             to={item.to}
             end={item.to === "/dashboard"}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                 isActive
-                  ? "bg-primary-50 text-primary-700"
-                  : "text-[#6B7280] hover:bg-gray-50 hover:text-[#111827]"
+                  ? "bg-brand-50 text-brand-700 border border-brand/10"
+                  : "text-stone-500 hover:bg-stone-50 hover:text-stone-900 border border-transparent"
               }`
             }
           >
@@ -54,11 +54,19 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-gray-100">
+      {/* Bottom section */}
+      <div className="p-4 space-y-2">
+        {/* Trust badge */}
+        <div className="px-4 py-3 rounded-xl bg-gradient-to-r from-brand-50 to-cream-100 border border-brand/10">
+          <p className="text-[11px] text-brand-700 font-medium leading-tight">
+            Free for your first 3 checks
+          </p>
+        </div>
+
+        {/* Logout */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-[#6B7280] hover:bg-gray-50 hover:text-danger w-full transition-colors"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-stone-500 hover:bg-danger-50 hover:text-danger w-full transition-all duration-150 border border-transparent hover:border-danger/10"
         >
           <LogOut className="w-5 h-5" />
           Logout
