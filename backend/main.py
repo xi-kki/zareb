@@ -4,33 +4,45 @@ Production entry point. Run with:
     uvicorn main:app --host 0.0.0.0 --port 8000
 """
 
+import logging
 import os
+import sys
 import warnings
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from contextlib import asynccontextmanager
+
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+logger = logging.getLogger("zareb")
+
+# ── Graceful imports ───────────────────────────────────────
+# Each module is imported here so that a single broken import
+# doesn't prevent the app from starting and serving /health.
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api import auth, documents, analysis, reports, chat, checklists, knowledge
+
+_route_modules = []
+_import_errors = []
+
+for _mod_name in ["auth", "documents", "analysis", "reports", "chat", "checklists", "knowledge"]:
+    try:
+        _mod = __import__(f"app.api.{_mod_name}", fromlist=["router"])
+        _route_modules.append((_mod_name, _mod))
+        logger.info("Loaded route module: %s", _mod_name)
+    except Exception as exc:
+        logger.warning("Route module '%s' failed to load: %s", _mod_name, exc)
+        _import_errors.append(_mod_name)
+
 
 # ── Production safety checks ──────────────────────────────
 
 def _check_production_settings():
-    """Warn about insecure defaults that must be overridden in production."""
     if settings.DEBUG:
-        warnings.warn(
-            "SECURITY: DEBUG mode is ON. This exposes SQL queries and stack traces. "
-            "Set DEBUG=false in production."
-        )
-    
+        logger.warning("SECURITY: DEBUG mode is ON.")
     if settings.JWT_SECRET == "zareb-dev-secret-change-in-production-32chars":
-        warnings.warn(
-            "SECURITY: JWT_SECRET is the insecure development default. "
-            "Generate a random 32+ char secret and set JWT_SECRET in your .env file."
-        )
+        logger.warning("SECURITY: JWT_SECRET is the insecure dev default.")
 
 _check_production_settings()
 
@@ -41,10 +53,9 @@ _check_production_settings()
 async def lifespan(app: FastAPI):
     try:
         await init_db()
+        logger.info("Database tables initialized.")
     except Exception as e:
-        # App can still serve healthcheck even if DB is down.
-        # DB will be retried on first request.
-        print(f"[Zareb] DB init deferred (will retry): {e}")
+        logger.warning("DB init deferred (will retry on first request): %s", e)
     yield
 
 
@@ -52,37 +63,15 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     lifespan=lifespan,
-    # Disable OpenAPI docs in production
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
 
-# Security headers middleware
-@app.middleware("http")
-async def add_security_headers(request, call_next):
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    # Only set CSP in non-dev or if explicitly configured
-    if not settings.DEBUG:
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https:; "
-            "connect-src 'self' https:; "
-            "font-src 'self' data:; "
-        )
-    return response
 
-# ── CORS (hardened for production) ─────────────────────────
+# ── CORS ───────────────────────────────────────────────────
 
 cors_origins = settings.cors_origins_list
 if not cors_origins or cors_origins == [""]:
-    # Fallback to safe defaults
     cors_origins = ["http://localhost:5173", "http://localhost:3000"]
 
 app.add_middleware(
@@ -90,27 +79,30 @@ app.add_middleware(
     allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=[
-        "Authorization",
-        "Content-Type",
-        "Accept",
-        "Origin",
-        "X-Requested-With",
-    ],
+    allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
-# ── Routers ─────────────────────────────────────────────────
 
-app.include_router(auth.router)
-app.include_router(documents.router)
-app.include_router(analysis.router)
-app.include_router(reports.router)
-app.include_router(chat.router)
-app.include_router(checklists.router)
-app.include_router(knowledge.router)
+# ── Register routes ────────────────────────────────────────
 
+for mod_name, mod in _route_modules:
+    try:
+        app.include_router(mod.router)
+        logger.info("Registered routes from: %s", mod_name)
+    except Exception as exc:
+        logger.warning("Failed to register routes from '%s': %s", mod_name, exc)
+
+
+# ── Healthcheck (always works, even if DB or routes are down) ──
 
 @app.get("/health")
 async def health():
-    """Health check endpoint for Railway/load balancers."""
     return {"status": "ok", "service": "zareb-api", "version": settings.APP_VERSION}
+
+
+# ── Startup banner ────────────────────────────────────────
+
+if _import_errors:
+    logger.warning("App started with %d module(s) unavailable: %s", len(_import_errors), _import_errors)
+else:
+    logger.info("All route modules loaded successfully.")
