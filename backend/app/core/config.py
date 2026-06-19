@@ -43,7 +43,7 @@ class Settings:
     # CORS
     _raw_cors: str = os.getenv(
         "CORS_ORIGINS",
-        "http://localhost:5173,http://localhost:3000",
+        "http://localhost:5173,http://localhost:3000,https://zareb.netlify.app",
     )
 
     @property
@@ -51,7 +51,7 @@ class Settings:
         """Parse CORS_ORIGINS into a list, filtering empty strings."""
         origins = [o.strip() for o in self._raw_cors.split(",") if o.strip()]
         if not origins:
-            origins = ["http://localhost:5173", "http://localhost:3000"]
+            origins = ["http://localhost:5173", "http://localhost:3000", "https://zareb.netlify.app"]
         return origins
 
     # File upload

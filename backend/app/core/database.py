@@ -29,6 +29,10 @@ def _get_async_url():
     url = settings.DATABASE_URL
     if url.startswith("sqlite://"):
         url = url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+    elif url.startswith("postgresql://"):
+        # Railway provides DATABASE_URL as postgresql://...
+        # Async SQLAlchemy needs postgresql+asyncpg://
+        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
     return url
 
 
