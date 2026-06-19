@@ -1,11 +1,16 @@
 """Database setup with SQLAlchemy — supports both sync and async."""
 
+import asyncio
+import logging
 import os
-from sqlalchemy import create_engine
+
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class Base(DeclarativeBase):
@@ -45,9 +50,35 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def init_db():
-    """Create all tables if they don't exist yet."""
-    async with async_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all, checkfirst=True)
+    """Create all tables if they don't exist yet.
+    
+    Retries up to 5 times with exponential backoff to handle
+    transient PostgreSQL connectivity issues (common on Railway
+    during initial deployment / database provisioning).
+    """
+    max_retries = 5
+    base_delay = 1.0  # seconds
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            async with async_engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all, checkfirst=True)
+            logger.info("Database tables ready.")
+            return
+        except Exception as exc:
+            if attempt < max_retries:
+                delay = base_delay * (2 ** (attempt - 1))
+                logger.warning(
+                    "DB connection attempt %d/%d failed: %s. Retrying in %.1fs...",
+                    attempt, max_retries, exc, delay,
+                )
+                await asyncio.sleep(delay)
+            else:
+                logger.error(
+                    "DB connection failed after %d attempts: %s",
+                    max_retries, exc,
+                )
+                raise
 
 
 async def get_db():
