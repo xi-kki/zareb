@@ -28,6 +28,10 @@ Thumbs.db
 frontend/.env.local
 backend/.env
 
+# Backend artifacts
+*.bak
+*.db
+
 # Logs
 *.log
 
