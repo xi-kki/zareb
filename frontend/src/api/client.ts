@@ -31,7 +31,7 @@ api.interceptors.response.use(
 
 // Auth
 export const auth = {
-  register: (data: { email: string; password: string; company_name?: string; country?: string; export_market?: string }) =>
+  register: (data: { email: string; password: string; company_name?: string; country?: string; export_market?: string; captcha_token?: string }) =>
     api.post("/auth/register", data).then((r) => r.data),
   login: (data: { email: string; password: string }) =>
     api.post("/auth/login", data).then((r) => r.data),

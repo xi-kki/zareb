@@ -27,7 +27,7 @@ from app.services.ai_service import ai_service
 _route_modules = []
 _import_errors = []
 
-for _mod_name in ["auth", "documents", "analysis", "reports", "chat", "checklists", "knowledge"]:
+for _mod_name in ["auth", "documents", "analysis", "reports", "chat", "checklists", "knowledge", "admin"]:
     try:
         _mod = __import__(f"app.api.{_mod_name}", fromlist=["router"])
         _route_modules.append((_mod_name, _mod))

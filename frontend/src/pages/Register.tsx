@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { auth } from "../api/client";
-import { UserPlus, Leaf } from "lucide-react";
+import { UserPlus, Leaf, Shield } from "lucide-react";
 
 const COUNTRIES = ["Nigeria", "Ghana", "Kenya", "Other"];
 
@@ -17,8 +17,48 @@ export default function Register() {
   });
   const [error, setError] = useState("");
 
+  const captchaRef = useRef<HTMLDivElement>(null);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaLoaded, setCaptchaLoaded] = useState(false);
+
+  // Load reCAPTCHA script
+  useEffect(() => {
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    if (!siteKey) {
+      setCaptchaLoaded(true); // No CAPTCHA configured — skip
+      return;
+    }
+    if (document.getElementById("recaptcha-script")) {
+      setCaptchaLoaded(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.id = "recaptcha-script";
+    script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+    script.onload = () => setCaptchaLoaded(true);
+    document.body.appendChild(script);
+  }, []);
+
+  const executeCaptcha = async (): Promise<string> => {
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    if (!siteKey) return "";
+    return new Promise((resolve) => {
+      (window as any).grecaptcha.ready(async () => {
+        try {
+          const token = await (window as any).grecaptcha.execute(siteKey, { action: "register" });
+          resolve(token);
+        } catch {
+          resolve("");
+        }
+      });
+    });
+  };
+
   const registerMutation = useMutation({
-    mutationFn: auth.register,
+    mutationFn: async (data: typeof form) => {
+      const token = await executeCaptcha();
+      return auth.register({ ...data, captcha_token: token });
+    },
     onSuccess: (data) => {
       localStorage.setItem("zareb_token", data.access_token);
       localStorage.setItem("zareb_user", JSON.stringify(data.user));

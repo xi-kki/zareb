@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, field_validator
+import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token, decode_access_token, validate_password_strength
 from app.models.user import User
 from app.services.magic_link import generate_magic_token, verify_magic_token, build_magic_link
+from app.services.captcha_service import verify_captcha
+from app.services.email_service import send_magic_link_email
 import re
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -37,6 +40,7 @@ class RegisterRequest(BaseModel):
     company_name: str = ""
     country: str = "Other"
     export_market: str = "EU"
+    captcha_token: str = ""  # Google reCAPTCHA v3 token
 
     @field_validator("email")
     @classmethod
@@ -88,6 +92,11 @@ async def register(request: RegisterRequest, db: AsyncSession = Depends(get_db))
     # Rate limit by IP
     if not _check_rate_limit(f"register:{request.email}"):
         raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Too many requests. Please wait.")
+
+    # Verify CAPTCHA
+    captcha_valid = await verify_captcha(request.captcha_token)
+    if not captcha_valid:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CAPTCHA verification failed. Please try again.")
 
     # Validate password strength
     pwd_error = validate_password_strength(request.password)
@@ -191,13 +200,25 @@ async def request_magic_link(
     if user:
         # Generate one-time magic token
         token = generate_magic_token(request.email)
-        link = build_magic_link(token)
-        print(f"[Zareb] Magic link for {request.email}: {link}")
-        return MagicLinkResponse(
-            message="Magic link sent! Check your email (or server console in dev mode).",
-            link=link,
-            expires_in="15 minutes",
-        )
+        # Use frontend URL for the magic link
+        frontend_url = os.getenv("SITE_URL", "https://zareb.netlify.app")
+        link = build_magic_link(token, base_url=frontend_url)
+        
+        # Send email via SendGrid (falls back to console)
+        sent = send_magic_link_email(request.email, link)
+        
+        if sent:
+            return MagicLinkResponse(
+                message="Magic link sent! Check your email.",
+                link=link if settings.DEBUG else "",
+                expires_in="15 minutes",
+            )
+        else:
+            return MagicLinkResponse(
+                message="Could not send email. Please try again.",
+                link="",
+                expires_in="",
+            )
     else:
         # Don't reveal if email exists — but for UX, still show success
         return MagicLinkResponse(

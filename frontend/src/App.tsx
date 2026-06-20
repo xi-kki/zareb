@@ -45,6 +45,7 @@ export default function App() {
       <Route path="/dashboard/chat/:reportId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
       <Route path="/dashboard/checklists" element={<ProtectedRoute><Checklists /></ProtectedRoute>} />
       <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/dashboard/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
