@@ -78,9 +78,9 @@ export default function Register() {
               <input
                 type="password"
                 required
-                minLength={6}
+                minLength={8}
                 className="input-field"
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters"
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
               />

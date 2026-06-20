@@ -136,6 +136,34 @@ async def get_me(user: User = Depends(get_current_user)):
     return user.to_dict()
 
 
+class UpdateProfileRequest(BaseModel):
+    company_name: str = ""
+    country: str = "Other"
+    export_market: str = "EU"
+
+    @field_validator("export_market")
+    @classmethod
+    def validate_market(cls, v: str) -> str:
+        if v not in ("EU", "UK", "Both"):
+            raise ValueError("export_market must be EU, UK, or Both")
+        return v
+
+
+@router.patch("/me")
+async def update_profile(
+    request: UpdateProfileRequest,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Update user profile (company name, country, export market)."""
+    user.company_name = request.company_name
+    user.country = request.country
+    user.export_market = request.export_market
+    await db.commit()
+    await db.refresh(user)
+    return user.to_dict()
+
+
 class MagicLinkRequest(BaseModel):
     email: str
 

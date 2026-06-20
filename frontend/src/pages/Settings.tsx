@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { auth } from "../api/client";
-import { Settings, Save, Loader2, Leaf } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 
 const COUNTRIES = ["Nigeria", "Ghana", "Kenya", "Other"];
 
@@ -30,9 +30,32 @@ export default function SettingsPage() {
   const update = (field: string, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: { company_name: string; country: string; export_market: string }) =>
+      fetch("/api/auth/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("zareb_token")}`,
+        },
+        body: JSON.stringify(data),
+      }).then((r) => r.json()),
+    onSuccess: (data) => {
+      if (data.id) {
+        localStorage.setItem("zareb_user", JSON.stringify(data));
+        setUser(data);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    },
+    onError: () => {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    },
+  });
+
   const handleSaveProfile = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    updateProfileMutation.mutate(form);
   };
 
   if (!user) {

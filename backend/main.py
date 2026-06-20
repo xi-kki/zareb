@@ -22,6 +22,7 @@ logger = logging.getLogger("zareb")
 
 from app.core.config import settings
 from app.core.database import init_db
+from app.services.ai_service import ai_service
 
 _route_modules = []
 _import_errors = []
@@ -57,6 +58,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("DB init deferred (will retry on first request): %s", e)
     yield
+    # Graceful shutdown
+    try:
+        if hasattr(ai_service, "close"):
+            await ai_service.close()
+            logger.info("AI service connections closed.")
+    except Exception as e:
+        logger.warning("AI service shutdown warning: %s", e)
 
 
 app = FastAPI(

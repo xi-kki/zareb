@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { reports } from "../api/client";
 import { useState } from "react";
 import { ArrowLeft, Download, RefreshCw, MessageSquare, AlertTriangle, Info, CheckCircle, Copy, Check, Loader2, Sparkles } from "lucide-react";
+import { reports as reportsApi } from "../api/client";
 import ScoreGauge from "../components/ScoreGauge";
 import GapCard from "../components/GapCard";
 
@@ -108,8 +109,7 @@ export default function ReportPage() {
                 onClick={async () => {
                   setDownloading(true);
                   try {
-                    const { reports } = await import("../api/client");
-                    await reports.downloadPdf(report.id);
+                    await reportsApi.downloadPdf(report.id);
                   } catch (e) {
                     console.error("PDF download failed", e);
                   }
@@ -234,8 +234,7 @@ export default function ReportPage() {
           onClick={async () => {
             setDownloading(true);
             try {
-              const { reports } = await import("../api/client");
-              await reports.downloadPdf(report.id);
+              await reportsApi.downloadPdf(report.id);
             } catch (e) {
               console.error("PDF download failed", e);
             }

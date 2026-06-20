@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Loader2, Leaf } from "lucide-react";
+import { chat as chatApi } from "../api/client";
 
 const SUGGESTED_QUESTIONS = [
   "What's my biggest compliance risk right now?",
@@ -73,8 +74,7 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, { role: "zareb", content: "" }]);
 
     try {
-      const { chat } = await import("../api/client");
-      const response = await chat.send(message, reportId);
+      const response = await chatApi.send(message, reportId);
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";

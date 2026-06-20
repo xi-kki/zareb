@@ -152,6 +152,10 @@ class GroqProvider:
         )
         self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
+    async def close(self):
+        """Close the HTTP client for graceful shutdown."""
+        await self._client.aclose()
+
     async def analyze_document(self, parsed_text: str, standard: str) -> dict:
         """Send document text to Groq and get structured compliance analysis, enriched with RAG context."""
         try:
@@ -404,6 +408,7 @@ class AIService:
     """Unified AI service that delegates to configured provider."""
 
     def __init__(self):
+        self._provider = None
         provider = (os.getenv("AI_PROVIDER") or settings.AI_PROVIDER or "grok").lower()
 
         if provider == "groq":
@@ -438,6 +443,11 @@ class AIService:
     ) -> AsyncGenerator[str, None]:
         async for token in self._provider.chat_stream(message, report_context):
             yield token
+
+    async def close(self):
+        """Close the underlying provider's connections."""
+        if hasattr(self._provider, "close"):
+            await self._provider.close()
 
 
 # Singleton

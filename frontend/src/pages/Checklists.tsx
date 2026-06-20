@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { checklists } from "../api/client";
 import { CheckSquare, Download, FileText, ChevronRight, Loader2, ClipboardList } from "lucide-react";
@@ -23,17 +23,15 @@ export default function ChecklistsPage() {
     mutationFn: (items: string[]) => checklists.save(standard, items),
   });
 
+  const debouncedSave = useRef<ReturnType<typeof setTimeout>>();
   const saveProgress = useCallback(
-    (() => {
-      let timeout: ReturnType<typeof setTimeout>;
-      return (items: string[]) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          saveMutation.mutate(items);
-        }, 2000);
-      };
-    })(),
-    [standard]
+    (items: string[]) => {
+      clearTimeout(debouncedSave.current);
+      debouncedSave.current = setTimeout(() => {
+        saveMutation.mutate(items);
+      }, 2000);
+    },
+    [standard, saveMutation]
   );
 
   useEffect(() => {
