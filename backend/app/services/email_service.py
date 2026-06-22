@@ -1,30 +1,20 @@
-"""Email service for Zareb — SendGrid integration for magic link delivery."""
+"""Email service for Zareb — SMTP2GO integration for magic link delivery."""
 
 import os
 import logging
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import httpx
 
 logger = logging.getLogger(__name__)
 
-# ── SendGrid (primary) ─────────────────────────────────────
-
-try:
-    import sendgrid
-    from sendgrid.helpers.mail import Mail, Email, To, Content
-    HAS_SENDGRID = True
-except ImportError:
-    HAS_SENDGRID = False
-    logger.info("sendgrid package not installed — email will fall back to console")
+SMTP2GO_API_URL = "https://api.smtp2go.com/v3/email/send"
 
 
 def send_magic_link_email(recipient_email: str, magic_link: str) -> bool:
-    """Send a magic link email via SendGrid.
+    """Send a magic link email via SMTP2GO API.
     
-    Falls back to console logging if SendGrid is not configured.
+    Falls back to console logging if SMTP2GO is not configured.
     Returns True if sent successfully, False otherwise.
     """
-    site_url = os.environ.get("SITE_URL", "https://zareb.netlify.app")
     app_name = "Zareb"
     
     # Build email content
@@ -84,39 +74,45 @@ def send_magic_link_email(recipient_email: str, magic_link: str) -> bool:
     </html>
     """
 
-    # Try SendGrid first
-    sendgrid_key = os.environ.get("SENDGRID_API_KEY") or ""
-    from_email = os.environ.get("SENDGRID_FROM_EMAIL", "noreply@zareb.app")
+    # Try SMTP2GO
+    api_key = os.environ.get("SMTP2GO_API_KEY") or ""
+    from_email = os.environ.get("SMTP2GO_FROM_EMAIL", "noreply@zareb.app")
+    from_name = "Zareb"
 
-    if HAS_SENDGRID and sendgrid_key:
+    if api_key:
         try:
-            sg = sendgrid.SendGridAPIClient(api_key=sendgrid_key)
-            mail = Mail(
-                from_email=from_email,
-                to_emails=recipient_email,
-                subject=subject,
-                html_content=html_content,
-            )
-            response = sg.send(mail)
-            logger.info(f"Magic link email sent to {recipient_email} (status: {response.status_code})")
-            return 200 <= response.status_code < 300
+            payload = {
+                "api_key": api_key,
+                "to": [recipient_email],
+                "sender": f"{from_name} <{from_email}>",
+                "subject": subject,
+                "html_body": html_content,
+            }
+            response = httpx.post(SMTP2GO_API_URL, json=payload, timeout=15.0)
+            data = response.json()
+            if data.get("data", {}).get("succeeded", False):
+                logger.info(f"Magic link email sent to {recipient_email} via SMTP2GO")
+                return True
+            else:
+                error = data.get("data", {}).get("error", "unknown error")
+                logger.warning(f"SMTP2GO send failed: {error}. Falling back to console log.")
         except Exception as e:
-            logger.warning(f"SendGrid send failed: {e}. Falling back to console log.")
+            logger.warning(f"SMTP2GO error: {e}. Falling back to console log.")
+    else:
+        logger.info("SMTP2GO_API_KEY not set — falling back to console log.")
 
     # Fallback: log to console
     logger.info(f"=== MAGIC LINK for {recipient_email} ===")
     logger.info(f"Link: {magic_link}")
     logger.info(f"Subject: {subject}")
-    logger.info("(SendGrid not configured — set SENDGRID_API_KEY for email delivery)")
+    logger.info("(Set SMTP2GO_API_KEY for email delivery)")
     
     return True  # Don't fail — console logging is acceptable for dev
 
 
 def send_welcome_email(recipient_email: str, login_url: str) -> bool:
     """Send a welcome email after registration."""
-    site_url = os.environ.get("SITE_URL", "https://zareb.netlify.app")
-    
     logger.info(f"=== WELCOME EMAIL for {recipient_email} ===")
     logger.info(f"Login: {login_url}")
-    logger.info("(SendGrid not configured for welcome emails yet)")
+    logger.info("(SMTP2GO welcome emails not configured yet)")
     return True
