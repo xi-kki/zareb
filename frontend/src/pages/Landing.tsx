@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useI18n } from "../i18n";
 import {
   Shield, Upload, FileSearch, CheckCircle, ArrowRight,
-  AlertTriangle, Zap, BarChart3, Camera, Leaf, Sparkles
+  AlertTriangle, Zap, BarChart3, Camera, Sparkles
 } from "lucide-react";
 
 export default function Landing() {
@@ -14,7 +14,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-9 h-9 bg-gradient-to-br from-brand to-brand-800 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-              <Leaf className="w-5 h-5 text-white" />
+              <span className="text-white font-display font-bold text-lg leading-none">Z</span>
             </div>
             <span className="font-display font-bold text-stone-900 text-xl">Zareb</span>
           </Link>

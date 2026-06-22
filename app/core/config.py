@@ -40,6 +40,18 @@ class Settings:
     CLOUDINARY_API_KEY: str = os.getenv("CLOUDINARY_API_KEY", "")
     CLOUDINARY_API_SECRET: str = os.getenv("CLOUDINARY_API_SECRET", "")
 
+    # Email (Mailjet — 200 emails/day free)
+    MAILJET_API_KEY: str = os.getenv("MAILJET_API_KEY", "")
+    MAILJET_SECRET_KEY: str = os.getenv("MAILJET_SECRET_KEY", "")
+    MAILJET_FROM_EMAIL: str = os.getenv("MAILJET_FROM_EMAIL", "noreply@zareb.app")
+
+    # CAPTCHA (Google reCAPTCHA v3)
+    RECAPTCHA_SECRET_KEY: str = os.getenv("RECAPTCHA_SECRET_KEY", "")
+
+    # Site / Admin
+    SITE_URL: str = os.getenv("SITE_URL", "https://zareb.netlify.app")
+    ADMIN_EMAILS: list[str] = [e.strip() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
+
     # CORS
     _raw_cors: str = os.getenv(
         "CORS_ORIGINS",

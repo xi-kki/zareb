@@ -19,10 +19,8 @@ import pickle
 from pathlib import Path
 from typing import Optional
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-
+# Lazy import: sklearn/numpy load slowly on Windows
+# Imported inside methods that actually need them
 
 KNOWLEDGE_DIR = Path(__file__).resolve().parent.parent / "knowledge_data"
 CACHE_FILE = KNOWLEDGE_DIR / ".rag_cache.pkl"
@@ -58,19 +56,30 @@ def _chunk_text(text: str, source: str, chunk_size: int = 500, overlap: int = 10
 
 
 class RAGKnowledgeBase:
-    """Lightweight RAG using TF-IDF vector similarity."""
+    """Lightweight RAG using TF-IDF vector similarity.
+    
+    sklearn/numpy imports are lazy (inside methods) to avoid slow
+    Windows startup times.
+    """
 
     def __init__(self):
-        self.vectorizer = TfidfVectorizer(
+        self._vectorizer = None
+        self._tfidf_matrix = None
+        self._loaded = False
+        self.chunks: list[dict] = []
+
+    def _ensure_loaded(self):
+        """Lazy-import sklearn and initialize vectorizer on first use."""
+        if self._vectorizer is not None:
+            return
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        self._vectorizer = TfidfVectorizer(
             max_features=5000,
             stop_words="english",
             ngram_range=(1, 2),
             lowercase=True,
             strip_accents="unicode",
         )
-        self.chunks: list[dict] = []
-        self._tfidf_matrix = None
-        self._loaded = False
 
     def _load_seed_files(self) -> list[dict]:
         """Load and chunk all knowledge base text files."""
@@ -95,6 +104,7 @@ class RAGKnowledgeBase:
 
     def initialize(self, force: bool = False):
         """Build the TF-IDF index. Caches to disk for fast reload."""
+        self._ensure_loaded()
         if self._loaded and not force:
             return
 
@@ -104,7 +114,7 @@ class RAGKnowledgeBase:
                 with open(CACHE_FILE, "rb") as f:
                     data = pickle.load(f)
                 self.chunks = data["chunks"]
-                self.vectorizer = data["vectorizer"]
+                self._vectorizer = data["vectorizer"]
                 self._tfidf_matrix = data["matrix"]
                 self._loaded = True
                 print(f"[RAG] Loaded {len(self.chunks)} chunks from cache")
@@ -120,7 +130,7 @@ class RAGKnowledgeBase:
             return
 
         texts = [c["text"] for c in self.chunks]
-        self._tfidf_matrix = self.vectorizer.fit_transform(texts)
+        self._tfidf_matrix = self._vectorizer.fit_transform(texts)
         self._loaded = True
 
         # Cache to disk
@@ -128,7 +138,7 @@ class RAGKnowledgeBase:
             with open(CACHE_FILE, "wb") as f:
                 pickle.dump({
                     "chunks": self.chunks,
-                    "vectorizer": self.vectorizer,
+                    "vectorizer": self._vectorizer,
                     "matrix": self._tfidf_matrix,
                 }, f)
             print(f"[RAG] Cached {len(self.chunks)} chunks to {CACHE_FILE}")
@@ -139,12 +149,15 @@ class RAGKnowledgeBase:
 
     def search(self, query: str, top_k: int = 5, min_score: float = 0.05) -> list[dict]:
         """Search the knowledge base. Returns top-k chunks with relevance scores."""
+        self._ensure_loaded()
         if not self._loaded:
             self.initialize()
         if not self.chunks or self._tfidf_matrix is None:
             return []
 
-        query_vec = self.vectorizer.transform([query])
+        from sklearn.metrics.pairwise import cosine_similarity
+        
+        query_vec = self._vectorizer.transform([query])
         scores = cosine_similarity(query_vec, self._tfidf_matrix).flatten()
         
         top_indices = scores.argsort()[::-1][:top_k]

@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { FileText, BarChart3, CheckSquare, MessageSquare, Settings, LogOut, Upload, Leaf, Shield, Globe } from "lucide-react";
+import { FileText, BarChart3, CheckSquare, MessageSquare, Settings, LogOut, Upload, Shield, Globe } from "lucide-react";
 import { useI18n } from "../i18n";
 
 const navItems = [
@@ -27,7 +27,7 @@ export default function Sidebar() {
       <div className="p-6 border-b border-stone-100">
         <NavLink to="/dashboard" className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-brand to-brand-800 rounded-xl flex items-center justify-center shadow-sm">
-            <Leaf className="w-5 h-5 text-white" />
+            <span className="text-white font-display font-bold text-lg leading-none">Z</span>
           </div>
           <div>
             <span className="font-display font-bold text-stone-900 text-xl">Zareb</span>
