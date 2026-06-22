@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { auth } from "../api/client";
 import { Save, Loader2 } from "lucide-react";
+import { useI18n } from "../i18n";
 
 const COUNTRIES = ["Nigeria", "Ghana", "Kenya", "Other"];
 
 export default function SettingsPage() {
+  const { t } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [form, setForm] = useState({
     company_name: "",
@@ -69,20 +71,20 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-stone-900 mb-2">Settings</h1>
-        <p className="text-stone-500">Manage your account and preferences.</p>
+        <h1 className="font-display text-3xl font-bold text-stone-900 mb-2">{t("settings.title")}</h1>
+        <p className="text-stone-500">{t("settings.subtitle")}</p>
       </div>
 
       {/* Company Profile */}
       <div className="card mb-6">
-        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">Company Profile</h2>
+        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">{t("settings.companyProfile")}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.email")}</label>
             <input type="email" value={user.email} disabled className="input-field bg-stone-50 text-stone-400" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Company Name</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.companyName")}</label>
             <input
               type="text"
               className="input-field"
@@ -91,7 +93,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Country</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.country")}</label>
             <select className="input-field" value={form.country} onChange={(e) => update("country", e.target.value)}>
               {COUNTRIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -99,7 +101,7 @@ export default function SettingsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Export Market Target</label>
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.exportMarket")}</label>
             <select className="input-field" value={form.export_market} onChange={(e) => update("export_market", e.target.value)}>
               <option value="EU">European Union (EU)</option>
               <option value="UK">United Kingdom (UK)</option>
@@ -107,16 +109,16 @@ export default function SettingsPage() {
             </select>
           </div>
           <button onClick={handleSaveProfile} className="btn-primary inline-flex items-center gap-2">
-            <Save className="w-4 h-4" /> {saved ? "Saved!" : "Save Changes"}
+            <Save className="w-4 h-4" /> {saved ? t("settings.saved") : t("settings.saveChanges")}
           </button>
         </div>
       </div>
 
       {/* Export Market Preferences */}
       <div className="card mb-6">
-        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">Export Market Preferences</h2>
+        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">{t("settings.exportPreferences")}</h2>
         <p className="text-sm text-stone-500 mb-4">
-          Zareb tailors compliance checks to your target markets. Your current preference:{' '}
+          {t("settings.exportDesc")}{' '}
           <span className="font-semibold text-stone-700">{form.export_market}</span>
         </p>
         <div className="flex gap-3">
@@ -138,12 +140,12 @@ export default function SettingsPage() {
 
       {/* Notification Preferences */}
       <div className="card mb-6">
-        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">Notifications</h2>
+        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">{t("settings.notifications")}</h2>
         <div className="space-y-3">
           {[
-            { id: "report_ready", label: "Email me when a compliance report is ready" },
-            { id: "weekly_summary", label: "Weekly compliance summary" },
-            { id: "reg_updates", label: "Regulatory updates for my target markets" },
+            { id: "report_ready", label: t("settings.reportReady") },
+            { id: "weekly_summary", label: t("settings.weeklySummary") },
+            { id: "reg_updates", label: t("settings.regUpdates") },
           ].map((n) => (
             <label key={n.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50 cursor-pointer transition-colors">
               <input type="checkbox" defaultChecked className="w-5 h-5 rounded border-stone-300 text-brand focus:ring-brand/30 accent-brand" />
@@ -155,22 +157,22 @@ export default function SettingsPage() {
 
       {/* Change Password */}
       <div className="card mb-6">
-        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">Change Password</h2>
+        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">{t("settings.changePassword")}</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Current Password</label>
-            <input type="password" className="input-field" placeholder="Enter current password" />
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.currentPassword")}</label>
+            <input type="password" className="input-field" placeholder={t("settings.currentPassword")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">New Password</label>
-            <input type="password" className="input-field" placeholder="At least 6 characters" />
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.newPassword")}</label>
+            <input type="password" className="input-field" placeholder={t("settings.newPassword")} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">Confirm New Password</label>
-            <input type="password" className="input-field" placeholder="Confirm new password" />
+            <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("settings.confirmPassword")}</label>
+            <input type="password" className="input-field" placeholder={t("settings.confirmPassword")} />
           </div>
           <button className="btn-primary inline-flex items-center gap-2">
-            <Save className="w-4 h-4" /> Update Password
+            <Save className="w-4 h-4" /> {t("settings.updatePassword")}
           </button>
         </div>
       </div>

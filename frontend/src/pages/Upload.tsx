@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { documents, analysis } from "../api/client";
 import { Upload, FileText, Loader2, Camera, ScanLine, Sparkles } from "lucide-react";
 import CameraScanner from "../components/CameraScanner";
+import { useI18n } from "../i18n";
 
 const DOC_TYPES = [
   { value: "product_label", label: "Product Label / Ingredient List" },
@@ -28,6 +29,7 @@ const STANDARDS = [
 ];
 
 export default function UploadPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [docType, setDocType] = useState("product_label");
@@ -94,7 +96,7 @@ export default function UploadPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-display text-3xl font-bold text-stone-900 mb-3">
-          Check your compliance in 30 seconds
+          {t("upload.title")}
         </h1>
         <p className="text-stone-500 leading-relaxed">
           Upload a label, HACCP plan, or audit report. Zareb scans it against your target standard
@@ -108,7 +110,7 @@ export default function UploadPage() {
           <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center">
             <Camera className="w-4 h-4 text-brand" />
           </div>
-          <span className="text-sm font-medium text-stone-700">Snap a photo of any label</span>
+          <span className="text-sm font-medium text-stone-700">{t("upload.cameraHeader")}</span>
         </div>
         <CameraScanner onCapture={handleCameraCapture} disabled={isAnalyzing} />
       </div>
@@ -116,7 +118,7 @@ export default function UploadPage() {
       {/* Divider */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 border-t border-stone-200" />
-        <span className="text-xs text-stone-400 font-medium tracking-wider uppercase">Or upload a file</span>
+        <span className="text-xs text-stone-400 font-medium tracking-wider uppercase">{t("upload.orUpload")}</span>
         <div className="flex-1 border-t border-stone-200" />
       </div>
 
@@ -168,7 +170,7 @@ export default function UploadPage() {
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-stone-700 mb-1.5">
-            What are you checking?
+            {t("upload.checkAgainst")}
           </label>
           <select
             className="input-field"
@@ -183,7 +185,7 @@ export default function UploadPage() {
         </div>
         <div>
           <label className="block text-sm font-medium text-stone-700 mb-1.5">
-            Standard to check against
+            {t("upload.standardLabel")}
           </label>
           <select
             className="input-field"
@@ -212,7 +214,7 @@ export default function UploadPage() {
         ) : (
           <>
             <ScanLine className="w-5 h-5" />
-            {file ? "Run compliance check — it's free" : "Select a file to get started"}
+            {file ? t("upload.runCheck") : t("upload.selectFile")}
           </>
         )}
       </button>
@@ -226,7 +228,7 @@ export default function UploadPage() {
 
       {/* Trust signal */}
       <p className="text-xs text-stone-400 text-center mt-6">
-        Free for your first 3 checks. No credit card required.
+        {t("upload.trust")}
       </p>
     </div>
   );

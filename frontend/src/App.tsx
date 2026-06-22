@@ -10,6 +10,7 @@ import Checklists from "./pages/Checklists";
 import Settings from "./pages/Settings";
 import VerifyMagicLink from "./pages/VerifyMagicLink";
 import Sidebar from "./components/Sidebar";
+import Admin from "./pages/Admin";
 import { useState, useEffect } from "react";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {

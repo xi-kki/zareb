@@ -4,6 +4,7 @@ import {
   BarChart3, Users, FileText, TrendingUp, Globe,
   Loader2, AlertTriangle, Trash2, RefreshCw, Shield
 } from "lucide-react";
+import { useI18n } from "../i18n";
 
 interface AdminStats {
   total_users: number;
@@ -26,6 +27,7 @@ interface UserData {
 }
 
 export default function AdminPage() {
+  const { t: tr } = useI18n();
   const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<UserData[]>([]);
@@ -142,7 +144,7 @@ export default function AdminPage() {
               tab === t ? "bg-brand text-white shadow-sm" : "bg-white border border-stone-200 text-stone-500 hover:border-brand/30"
             }`}
           >
-            {t === "overview" ? "Overview" : "Users"}
+            {t === "overview" ? tr("admin.overview") : tr("admin.users")}
           </button>
         ))}
       </div>
@@ -210,12 +212,12 @@ export default function AdminPage() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display font-semibold text-stone-900">
-              All Users ({totalUsers})
+              {tr("admin.users")} ({totalUsers})
             </h3>
           </div>
 
           {users.length === 0 ? (
-            <p className="text-stone-400 text-sm py-8 text-center">No users found</p>
+            <p className="text-stone-400 text-sm py-8 text-center">{tr("admin.noUsers")}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -243,7 +245,7 @@ export default function AdminPage() {
                         <button
                           onClick={() => handleDeleteUser(u.id)}
                           className="text-danger hover:text-danger-700 transition-colors p-1"
-                          title="Delete user"
+                          title={tr("admin.deleteUser")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
+import { useI18n } from "../i18n";
 import {
   Shield, Upload, FileSearch, CheckCircle, ArrowRight,
   AlertTriangle, Zap, BarChart3, Camera, Leaf, Sparkles
 } from "lucide-react";
 
 export default function Landing() {
+  const { t } = useI18n();
   return (
     <div className="min-h-screen bg-cream-200">
       {/* ── Header: Warm, minimal nav ── */}
@@ -21,10 +23,10 @@ export default function Landing() {
               to="/login"
               className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors px-4 py-2"
             >
-              Sign in
+              {t("auth.signInBtn")}
             </Link>
             <Link to="/register" className="btn-primary text-sm !py-2.5 !px-6">
-              Get started free
+              {t("auth.getStarted")}
             </Link>
           </div>
         </div>
@@ -40,30 +42,27 @@ export default function Landing() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-brand-50 text-brand-700 px-4 py-2 rounded-pill text-sm font-medium border border-brand/10 mb-10">
             <Shield className="w-4 h-4" />
-            For African food founders exporting to EU &amp; UK
+            {t("landing.tagline")}
           </div>
 
           {/* Headline */}
           <h1 className="font-display font-bold text-stone-900 text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 max-w-5xl mx-auto tracking-tight">
-            Know your compliance gaps{' '}
-            <span className="text-brand bg-brand-50/50 px-3 py-1 rounded-2xl">before the auditor does.</span>
+            {t("landing.headline")}{' '}
+            <span className="text-brand bg-brand-50/50 px-3 py-1 rounded-2xl">{t("landing.headlineHighlight")}</span>
           </h1>
 
           {/* Subhead */}
           <p className="text-lg md:text-xl text-stone-500 max-w-3xl mx-auto mb-12 leading-relaxed">
-            You've spent months perfecting your product. But one missing label requirement
-            can sink your EU/UK export deal. <span className="text-stone-700 font-medium">Zareb scans your documents</span> — 
-            HACCP plans, ingredient lists, labels — and tells you exactly what's missing 
-            before you ship.
+            {t("landing.subhead")}
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/register" className="btn-primary text-base inline-flex items-center gap-2 !py-4 !px-10 shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/25 transition-shadow">
-              Check your documents free <ArrowRight className="w-5 h-5" />
+              {t("landing.ctaFree")} <ArrowRight className="w-5 h-5" />
             </Link>
             <Link to="/register" className="btn-secondary text-base inline-flex items-center gap-2 !py-4 !px-10">
-              <Camera className="w-5 h-5" /> Scan a label
+              <Camera className="w-5 h-5" /> {t("landing.ctaScan")}
             </Link>
           </div>
 
@@ -85,12 +84,12 @@ export default function Landing() {
       <section className="bg-white section-warm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">How it works</span>
+            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">{t("landing.howItWorks")}</span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900 mt-3 mb-4">
-              Three steps to export-ready
+              {t("landing.howItWorksSub")}
             </h2>
             <p className="text-lg text-stone-500 max-w-2xl mx-auto">
-              No complex compliance software. Upload, scan, and know exactly where you stand.
+              {t("landing.howItWorksDesc")}
             </p>
           </div>
 
@@ -98,20 +97,20 @@ export default function Landing() {
             {[
               {
                 icon: Camera,
-                title: "Snap or upload",
-                desc: "Take a photo of your product label or upload your HACCP plan, ingredient list, or audit report. PDF, DOCX, JPG — whatever you have.",
+                title: t("landing.step1Title"),
+                desc: t("landing.step1Desc"),
                 step: "01"
               },
               {
                 icon: Zap,
-                title: "AI checks in 30 seconds",
-                desc: "Zareb scans your document against BRCGS, HACCP, FSMA, SQF, ISO 22000, NAFDAC, KEBS, or EU Food Law.",
+                title: t("landing.step2Title"),
+                desc: t("landing.step2Desc"),
                 step: "02"
               },
               {
                 icon: BarChart3,
-                title: "Know your gaps instantly",
-                desc: "A clear compliance score, critical gaps ranked by severity, and copy-paste fixes you can use immediately.",
+                title: t("landing.step3Title"),
+                desc: t("landing.step3Desc"),
                 step: "03"
               }
             ].map((step, i) => (
@@ -138,12 +137,12 @@ export default function Landing() {
       <section className="section-warm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">Why it matters</span>
+            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">{t("landing.whyMatters")}</span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900 mt-3 mb-4">
-              Failed an audit before? Here's why.
+              {t("landing.whyMattersTitle")}
             </h2>
             <p className="text-lg text-stone-500 max-w-2xl mx-auto">
-              African food founders lose millions to failed audits. Zareb catches what you'd miss.
+              {t("landing.whyMattersDesc")}
             </p>
           </div>
 
@@ -151,20 +150,20 @@ export default function Landing() {
             {[
               {
                 icon: AlertTriangle,
-                title: "Trying to export to Sainsbury's or Whole Foods?",
-                desc: "They require BRCGS certification. Zareb checks if you're ready before you apply.",
+                title: t("landing.pain1Title"),
+                desc: t("landing.pain1Desc"),
                 color: "warning"
               },
               {
                 icon: AlertTriangle,
-                title: "NAFDAC approved ≠ EU approved",
-                desc: "Nigeria's approval doesn't transfer. EU has stricter allergen, labeling, and novel food rules.",
+                title: t("landing.pain2Title"),
+                desc: t("landing.pain2Desc"),
                 color: "danger"
               },
               {
                 icon: AlertTriangle,
-                title: "EU Novel Food rules blocked your last export?",
-                desc: "If your product contains baobab, moringa, or other African ingredients — Zareb flags whether they need EU authorization first.",
+                title: t("landing.pain3Title"),
+                desc: t("landing.pain3Desc"),
                 color: "brand"
               }
             ].map((pain, i) => (
@@ -188,21 +187,21 @@ export default function Landing() {
       <section className="bg-white section-warm">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">Who it's for</span>
+            <span className="font-display text-brand font-semibold text-sm tracking-widest uppercase">{t("landing.whoFor")}</span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-stone-900 mt-3 mb-4">
-              Built for African food founders
+              {t("landing.whoForTitle")}
             </h2>
             <p className="text-lg text-stone-500 max-w-2xl mx-auto">
-              Whether you're a spice exporter in Accra or a snack brand in Lagos — Zareb speaks your standards.
+              {t("landing.whoForDesc")}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {[
-              "Snack and beverage brands exporting to UK grocers",
-              "Spice and superfood exporters needing EU Novel Food clearance",
-              "Processed food manufacturers seeking BRCGS or FSSC 22000",
-              "Organic and natural product brands targeting EU organic certification"
+              t("landing.whoForItem1"),
+              t("landing.whoForItem2"),
+              t("landing.whoForItem3"),
+              t("landing.whoForItem4")
             ].map((item, i) => (
               <div key={i} className="flex items-start gap-4 p-5 rounded-xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-200">
                 <div className="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
@@ -219,17 +218,16 @@ export default function Landing() {
       <section className="gradient-brand section-warm">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to know where you stand?
+            {t("landing.ctaReady")}
           </h2>
           <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto">
-            Free for your first 3 documents. No credit card. No commitment.
-            In 30 seconds, you'll know exactly what's missing.
+            {t("landing.freeCheck")}
           </p>
           <Link 
             to="/register" 
             className="inline-flex items-center gap-3 bg-white text-brand-700 font-semibold py-4 px-10 rounded-pill text-lg hover:bg-stone-50 transition-all duration-200 shadow-xl shadow-black/10 hover:shadow-2xl"
           >
-            Check your first document free <ArrowRight className="w-5 h-5" />
+            {t("landing.ctaFinal")} <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
       </section>
@@ -246,10 +244,10 @@ export default function Landing() {
             </div>
             <div className="text-center md:text-right">
               <p className="font-medium text-white text-sm mb-1">
-                Free for your first 3 documents. No credit card.
+                {t("landing.freeCheck")}
               </p>
               <p className="text-sm text-stone-500">
-                &copy; 2026 Zareb. Built for African food founders, by founders.
+                &copy; 2026 Zareb. {t("landing.footer")}
               </p>
             </div>
           </div>

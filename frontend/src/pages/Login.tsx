@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { auth } from "../api/client";
 import { LogIn, Mail, ArrowRight, CheckCircle, Leaf } from "lucide-react";
+import { useI18n } from "../i18n";
 
 export default function Login() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -84,7 +86,7 @@ export default function Login() {
             <>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("auth.email")}</label>
                   <input
                     type="email"
                     required
@@ -95,7 +97,7 @@ export default function Login() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Password</label>
+                  <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("auth.password")}</label>
                   <input
                     type="password"
                     required
@@ -135,7 +137,7 @@ export default function Login() {
             <>
               <form onSubmit={handleMagicLink} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-stone-700 mb-1.5">{t("auth.email")}</label>
                   <input
                     type="email"
                     required

@@ -4,8 +4,10 @@ import { documents, reports } from "../api/client";
 import { FileText, BarChart3, AlertTriangle, Upload, MessageSquare, Sparkles } from "lucide-react";
 import ScoreGauge from "../components/ScoreGauge";
 import ReportTable from "../components/ReportTable";
+import { useI18n } from "../i18n";
 
 export default function Dashboard() {
+  const { t } = useI18n();
   const { data: docs = [] } = useQuery({ queryKey: ["documents"], queryFn: documents.list });
   const { data: reps = [] } = useQuery({ queryKey: ["reports"], queryFn: reports.list });
 
@@ -70,16 +72,16 @@ export default function Dashboard() {
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3 mb-8">
         <Link to="/dashboard/upload" className="btn-primary inline-flex items-center gap-2 text-sm">
-          <Upload className="w-4 h-4" /> Upload Document
+          <Upload className="w-4 h-4" /> {t("dashboard.uploadDoc")}
         </Link>
         <Link to="/dashboard/chat" className="btn-secondary inline-flex items-center gap-2 text-sm">
-          <MessageSquare className="w-4 h-4" /> Ask Zareb
+          <MessageSquare className="w-4 h-4" /> {t("dashboard.askZareb")}
         </Link>
       </div>
 
       {/* Recent Reports */}
       <div className="card">
-        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">Recent Reports</h2>
+        <h2 className="font-display text-lg font-semibold text-stone-900 mb-4">{t("dashboard.recentReports")}</h2>
         {Array.isArray(reps) && reps.length > 0 ? (
           <ReportTable reports={reps} />
         ) : (
@@ -87,10 +89,10 @@ export default function Dashboard() {
             <div className="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <BarChart3 className="w-8 h-8 text-stone-300" />
             </div>
-            <p className="font-medium text-stone-700">No reports yet</p>
-            <p className="text-sm mt-1">Upload a document to get your first compliance analysis</p>
+            <p className="font-medium text-stone-700">{t("dashboard.noReportsYet")}</p>
+            <p className="text-sm mt-1">{t("dashboard.noReportsDesc")}</p>
             <Link to="/dashboard/upload" className="btn-primary inline-flex items-center gap-2 mt-6 text-sm">
-              <Upload className="w-4 h-4" /> Upload Now
+              <Upload className="w-4 h-4" /> {t("dashboard.uploadNow")}
             </Link>
           </div>
         )}
