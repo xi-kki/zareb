@@ -40,9 +40,10 @@ class Settings:
     CLOUDINARY_API_KEY: str = os.getenv("CLOUDINARY_API_KEY", "")
     CLOUDINARY_API_SECRET: str = os.getenv("CLOUDINARY_API_SECRET", "")
 
-    # Email (SMTP2GO — 1,000 free emails/month)
-    SMTP2GO_API_KEY: str = os.getenv("SMTP2GO_API_KEY", "")
-    SMTP2GO_FROM_EMAIL: str = os.getenv("SMTP2GO_FROM_EMAIL", "noreply@zareb.app")
+    # Email (Mailjet — 200 emails/day free)
+    MAILJET_API_KEY: str = os.getenv("MAILJET_API_KEY", "")
+    MAILJET_SECRET_KEY: str = os.getenv("MAILJET_SECRET_KEY", "")
+    MAILJET_FROM_EMAIL: str = os.getenv("MAILJET_FROM_EMAIL", "noreply@zareb.app")
 
     # CAPTCHA (Google reCAPTCHA v3)
     RECAPTCHA_SECRET_KEY: str = os.getenv("RECAPTCHA_SECRET_KEY", "")
