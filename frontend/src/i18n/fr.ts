@@ -122,6 +122,10 @@ export default {
     newPassword: "Nouveau mot de passe",
     confirmPassword: "Confirmer le mot de passe",
     updatePassword: "Mettre à jour",
+    email: "Email",
+    companyName: "Nom de l'entreprise",
+    country: "Pays",
+    exportMarket: "Marché d'exportation cible",
   },
   admin: {
     title: "Administration",

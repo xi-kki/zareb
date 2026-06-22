@@ -238,7 +238,7 @@ export default function Landing() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-brand-700 rounded-lg flex items-center justify-center">
-                <Leaf className="w-4 h-4 text-white" />
+                <span className="text-white font-display font-bold text-sm leading-none">Z</span>
               </div>
               <span className="font-display font-bold text-white text-lg">Zareb</span>
             </div>

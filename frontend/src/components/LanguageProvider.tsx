@@ -1,4 +1,4 @@
-import { useState, useCallback, ReactNode, useEffect } from "react";
+import { useState, useCallback, ReactNode } from "react";
 import { I18nProvider, createI18n, Language, I18n } from "../i18n";
 
 const STORAGE_KEY = "zareb_language";
@@ -28,17 +28,7 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
     }
   }, []);
 
-  const i18n: I18n = {
-    ...createI18n(lang),
-    setLanguage,
-  };
+  const i18n: I18n = createI18n(lang, setLanguage);
 
   return <I18nProvider value={i18n}>{children}</I18nProvider>;
-}
-
-// Extend the I18n type to include setLanguage
-declare module "../i18n" {
-  interface I18n {
-    setLanguage: (lang: Language) => void;
-  }
 }

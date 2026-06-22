@@ -28,20 +28,33 @@ export function t(lang: Language, path: string): string {
   return typeof value === "string" ? value : path;
 }
 
-export function createI18n(lang: Language) {
+export interface I18n {
+  lang: Language;
+  t: (path: string) => string;
+  getTranslation: () => TranslationDict;
+  setLanguage: (lang: Language) => void;
+}
+
+export function createI18n(lang: Language, setLanguage: (lang: Language) => void): I18n {
   return {
     lang,
     t: (path: string) => t(lang, path),
     getTranslation: () => getTranslation(lang),
+    setLanguage,
   };
 }
-
-export type I18n = ReturnType<typeof createI18n>;
 
 // React context
 import { createContext, useContext } from "react";
 
-const I18nContext = createContext<I18n>(createI18n("en"));
+const defaultI18n: I18n = {
+  lang: "en",
+  t: (path: string) => t("en", path),
+  getTranslation: () => getTranslation("en"),
+  setLanguage: () => {},
+};
+
+const I18nContext = createContext<I18n>(defaultI18n);
 
 export const I18nProvider = I18nContext.Provider;
 export const useI18n = () => useContext(I18nContext);
