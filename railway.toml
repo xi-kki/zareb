@@ -1,7 +1,11 @@
 [build]
 builder = "NIXPACKS"
 
+[build.config]
+pythonRequirementsFile = "backend/requirements.txt"
+pythonSubdirectory = "backend"
+
 [deploy]
-startCommand = "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+startCommand = "cd backend && uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
 healthcheckPath = "/health"
 restartPolicyType = "ALWAYS"
