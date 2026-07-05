@@ -49,13 +49,13 @@ class Settings:
     RECAPTCHA_SECRET_KEY: str = os.getenv("RECAPTCHA_SECRET_KEY", "")
 
     # Site / Admin
-    SITE_URL: str = os.getenv("SITE_URL", "https://zareb.netlify.app")
+    SITE_URL: str = os.getenv("SITE_URL", "https://zareb.vercel.app")
     ADMIN_EMAILS: list[str] = [e.strip() for e in os.getenv("ADMIN_EMAILS", "").split(",") if e.strip()]
 
     # CORS
     _raw_cors: str = os.getenv(
         "CORS_ORIGINS",
-        "http://localhost:5173,http://localhost:3000,https://zareb.netlify.app",
+        "http://localhost:5173,http://localhost:3000,https://zareb.netlify.app,https://zareb.vercel.app",
     )
 
     @property
@@ -63,7 +63,7 @@ class Settings:
         """Parse CORS_ORIGINS into a list, filtering empty strings."""
         origins = [o.strip() for o in self._raw_cors.split(",") if o.strip()]
         if not origins:
-            origins = ["http://localhost:5173", "http://localhost:3000", "https://zareb.netlify.app"]
+            origins = ["http://localhost:5173", "http://localhost:3000", "https://zareb.netlify.app", "https://zareb.vercel.app"]
         return origins
 
     # File upload
