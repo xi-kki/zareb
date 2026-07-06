@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr, field_validator
 import os
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token, decode_access_token, validate_password_strength
 from app.models.user import User
