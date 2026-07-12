@@ -1,0 +1,7 @@
+frontend/
+.github/
+.husky/
+*.md
+.vercel/
+netlify.toml
+vercel.json
