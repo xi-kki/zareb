@@ -12,13 +12,19 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.document import Document
 from app.services.document_parser import extract_text
-# Cloudinary is optional — skip if not configured
-from app.core.config import settings
+
+# Cloudinary is optional — only import if configured
+cloudinary_upload = None
 if settings.CLOUDINARY_CLOUD_NAME:
-    from app.services.cloudinary_service import upload_file as cloudinary_upload
-else:
-    async def cloudinary_upload(file_bytes: bytes, filename: str) -> str:
-        return ""
+    try:
+        from app.services.cloudinary_service import upload_file as cloudinary_upload
+    except ImportError:
+        pass
+
+async def _upload_to_cloudinary(file_bytes: bytes, filename: str) -> str:
+    if cloudinary_upload:
+        return await cloudinary_upload(file_bytes, filename)
+    return ""
 from app.api.auth import get_current_user
 from app.models.user import User
 
@@ -101,7 +107,7 @@ async def upload_document(
     cloud_url = None
     if settings.CLOUDINARY_CLOUD_NAME and settings.CLOUDINARY_API_KEY:
         try:
-            cloud_url = await cloudinary_upload(file_bytes, file.filename or "document.pdf")
+            cloud_url = await _upload_to_cloudinary(file_bytes, file.filename or "document.pdf")
         except Exception as e:
             # Log but don't fail — fall back to local storage
             print(f"[Zareb] Cloudinary upload failed, using local storage: {e}")
