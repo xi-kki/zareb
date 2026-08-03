@@ -7,8 +7,15 @@ SECURITY NOTES FOR PRODUCTION:
 - Token expiry is configurable via JWT_EXPIRY_HOURS (default: 24h)
 """
 
+import os
 import secrets
 from datetime import datetime, timedelta, timezone
+
+# Force the pure-Python JOSE backend BEFORE importing jose.
+# The default 'cryptography' backend hangs on import on some Windows setups
+# (blocks in cryptography.hazmat.primitives.serialization.ssh).
+# HS256 only needs the native HMAC implementation, so this is safe.
+os.environ.setdefault("JOSE_BACKEND", "native")
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
