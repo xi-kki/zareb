@@ -3,8 +3,8 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://zareb-api.vercel.app/api/:1"
+      "source": "/api/:path*",
+      "destination": "https://zareb-api.vercel.app/api/:path*"
     },
     {
       "source": "/(.*)",
